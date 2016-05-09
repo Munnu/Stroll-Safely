@@ -1,0 +1,5 @@
+*.sh
+*.swp
+*.pyc
+/sproject/
+.DS_Store
