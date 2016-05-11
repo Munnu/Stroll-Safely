@@ -27,3 +27,7 @@ I forgot how much of my time is typically spent wrestling with environment stuff
 `Database error 42601: syntax error at or near "text"`
 But, they're all type text for now! AUHIFWEOIFW ok. :|
 5 minutes later: Heh, it was because I accidentally left a comma at the end of my sql table and column type association. Oh SQL... Or maybe not. Oh dear.
+
+I figured it out, it was partially because vim duplicated a few columns a bunch of times. Some columns still had spaces instead of underscore: column_name. This caused the bugs.
+
+I was able to load my data (though still need to read more on PostGIS). I changed the data types to not all be of type text as originally done to see if I could get pgloader to do something nice. I'm happy about my progress today despite having little time to work on my project (fieldtrip).
