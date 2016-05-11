@@ -3,3 +3,6 @@
 *.pyc
 /sproject/
 .DS_Store
+/pgfutter
+NYPD*
+Map__Crime*

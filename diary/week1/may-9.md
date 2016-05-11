@@ -20,3 +20,10 @@ Also, just in case these websites are down it is a good idea.
 
 1. [NYC Open Data: Crimes](https://data.cityofnewyork.us/Public-Safety/NYPD-7-Major-Felony-Incident-Map/dvh8-u7es)
 2. [SF Open Data: Crimes](https://data.sfgov.org/Public-Safety/Map-Crime-Incidents-from-1-Jan-2003/gxxq-x39z)
+
+# May 10th Log:
+
+I forgot how much of my time is typically spent wrestling with environment stuff. Also, I forgot how bad SQL is at explaining errors. Not an easy thing to debug when the error messages are vague.
+`Database error 42601: syntax error at or near "text"`
+But, they're all type text for now! AUHIFWEOIFW ok. :|
+5 minutes later: Heh, it was because I accidentally left a comma at the end of my sql table and column type association. Oh SQL... Or maybe not. Oh dear.

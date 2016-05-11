@@ -1,0 +1,23 @@
+LOAD CSV  
+      FROM './pgloader_test_data.csv' (x, y, a, b, c, d)  
+      INTO postgresql:///pgloader?csv (a, b, c, d)  
+ 
+      WITH truncate,  
+           skip header = 1,  
+           fields optionally enclosed by '"',  
+           fields escaped by double-quote,  
+           fields terminated by ','  
+ 
+       SET client_encoding to 'latin1',  
+           work_mem to '12MB',  
+           standard_conforming_strings to 'on'  
+ 
+    BEFORE LOAD DO  
+     $$ drop table if exists csv; $$,  
+     $$ create table csv (  
+         a bigint,  
+         b bigint,  
+         c char(2),  
+         d text  
+        );  
+   $$; 
