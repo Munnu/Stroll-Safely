@@ -1,11 +1,22 @@
 var map;
 function initMap() {
+
+    var geocoder = new google.maps.Geocoder();
+    var address = "new york";
+
+    geocoder.geocode( { 'address': address}, function(results, status) {
+
+    if (status == google.maps.GeocoderStatus.OK) {
+        var latitude = results[0].geometry.location.lat();
+        var longitude = results[0].geometry.location.lng();
+        } 
+
     // adding directions display and service variables
     var directionsDisplay = new google.maps.DirectionsRenderer;
     var directionsService = new google.maps.DirectionsService;
 
     // latitude and longitude stuff
-    var centerPoint = new google.maps.LatLng(44.540, -78.546);
+    var centerPoint = new google.maps.LatLng(latitude, longitude);
 
     // ref to the div the map will be loaded into
     var mapDiv = document.getElementById('map');
@@ -22,6 +33,7 @@ function initMap() {
     directionsDisplay.setMap(map);
 
     calculateAndDisplayRoute(directionsService, directionsDisplay);
+    }); 
 }
 
 
