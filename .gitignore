@@ -1,4 +1,5 @@
 *.sh
+*swo
 *.swp
 *.pyc
 /sproject/

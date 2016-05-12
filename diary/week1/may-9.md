@@ -31,3 +31,12 @@ But, they're all type text for now! AUHIFWEOIFW ok. :|
 I figured it out, it was partially because vim duplicated a few columns a bunch of times. Some columns still had spaces instead of underscore: column_name. This caused the bugs.
 
 I was able to load my data (though still need to read more on PostGIS). I changed the data types to not all be of type text as originally done to see if I could get pgloader to do something nice. I'm happy about my progress today despite having little time to work on my project (fieldtrip).
+
+# May 11th Log:
+I think I have not emphasized the struggle I always have with setting up environments. I failed to put in my first entry the matter of fact that I struggled to get pgloader and PostGIS on my computer properly (or so I had thought). It had come to my attention that PostGIS' inability to create certain extensions (believe it was sfcgal and decoder and decoder_us) would not have any bearing as to whether I could use the extension. It's totally useable. Because of this prior igorance, I had brew uninstalled my 9.4 postgresql to reinstall it... to install Postgresql.app (which has the latest Postgres 9.5.<something> and PostGIS 2.2) just to see that those same extensions had not been created.
+
+pgloader was hilarious in a grim way... The only reason it ended up working on my mac is because I found a .pkg file and thought I had to do a make to get it to have it universally work. Nope... well, I don't know what the make is for (I know, shame on me) as much as I know that pgloader <name of my csv loader file>.load where the .load file is the example loader file from the docs modified. Whole lot better than trying to SQLAlchemy insert. The database is more than 1 GB and SQL is way more efficient in that respect.
+
+Today one of my mentors had helped me to understand how to best go about learn about different modules or tools. They had showed me that they figure out how something works by going to their test docs and looking at what they're trying to accomplish through there. The unittest files are great for learning what the rules are because the rules are defined in those tests. How the method calls work and parameters are also demonstrated in this test file.
+
+This helped me to better understand not only the API but also this other module called gmaps. Gmaps is the more current version of the googlemaps module.

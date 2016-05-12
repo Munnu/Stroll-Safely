@@ -28,7 +28,9 @@
  
     BEFORE LOAD DO  
      $$ drop table if exists my_project; $$,  
+     $$ create sequence crime_data_nyc_seq; $$,
      $$ create table my_project (  
+            Crime_ID serial primary key,
             Occurrence_Date timestamp,
             Day_of_Week text,
             Occurrence_Month text,

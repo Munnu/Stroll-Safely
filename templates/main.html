@@ -3,23 +3,32 @@
 <head>
     <title>Routes: Stroll Safely Project</title>
     <link rel=stylesheet type=text/css href='{{ url_for('static',filename='style.css')}}'>
+
+
 </head>
 <body>
+    <form action="\">
+        <input type="text" id="start-latitude" name="start_lat" placeholder="start latitude">
+        <input type="text" id="start-longitude"" name="start_lng" placeholder="start longitude">
+        <button onclick="startDirections(event)">Route Me</button>
+    </form>
     <div id="map"></div>
-        <!-- Create the map itself -->
-        <script type="text/javascript" src='{{ url_for('static',filename='main.js')}}'></script>
-        <!-- Load the Google Maps API right here -->
 
     <!--
     <script src="https://maps.googleapis.com/maps/api/js?key=KEY-HERE&callback=initMap"
     async defer></script>
     -->
 
-    <script src="https://maps.googleapis.com/maps/api/js?callback=initMap"
-    async defer></script> 
     <!--
     <script async defer src="https://maps.googleapis.com/maps/api/js?key=KEY-HERE&callback=initMap"
       type="text/javascript"></script>
-  -->
+    -->
+
+    <script src="https://maps.googleapis.com/maps/api/js?callback=initMap"
+    async defer></script> 
+
+    <!-- Create the map itself -->
+    <script type="text/javascript" src='{{ url_for('static',filename='main.js')}}'></script>
+    <!-- Load the Google Maps API right here -->
 </body>
 </html>
