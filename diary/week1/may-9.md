@@ -40,3 +40,13 @@ pgloader was hilarious in a grim way... The only reason it ended up working on m
 Today one of my mentors had helped me to understand how to best go about learn about different modules or tools. They had showed me that they figure out how something works by going to their test docs and looking at what they're trying to accomplish through there. The unittest files are great for learning what the rules are because the rules are defined in those tests. How the method calls work and parameters are also demonstrated in this test file.
 
 This helped me to better understand not only the API but also this other module called gmaps. Gmaps is the more current version of the googlemaps module.
+
+#May 12th Log:
+This was a frustrating wrestle with javascript/jquery just to realize why my plots were not showing up on the map happened to be because of a typo on the word 'longitude'. Today I managed to load up 3 arbitrary lat-long points onto google maps that display in addition to whatever route the user puts for Point A. Point B is hard-coded so far.
+
+Hoping that I could easily do the sqlalchemy queries. I had to rename my sqlalchemy datatype of Point to text because it was not working well. Will figure that out later.
+
+My plan by the end of this week is to be able to:
+
+1. Have a bunch of crime locations to show up
+2. A way that the user can input a lat, lng for Point A, Point B and have google maps dynamically generate a route.
