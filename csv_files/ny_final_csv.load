@@ -35,7 +35,7 @@
             Occurrence_Date timestamp,
             Day_of_Week text,
             Occurrence_Month text,
-            Occurrence_Day integer,
+            Occurrence_Day integer, 
             Occurrence_Year integer,
             Occurrence_Hour integer,
             CompStat_Month integer,
