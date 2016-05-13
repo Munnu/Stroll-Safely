@@ -14,7 +14,7 @@ results = api.directions((40.728783, -73.7897503),
 
 def get_twenty():
     """ Test to see if I could get a list of 20 items from db """
-    twenty_entries = Crime_Data_NYC.query.filter_by(crime_id=26818).first()
+    twenty_entries = Crime_Data_NYC.query.limit(20).all()
     print "This is twenty entries", twenty_entries
 
 
