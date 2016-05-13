@@ -44,21 +44,16 @@ function initMap() {
             zoom: 8
         });
 
-        // Create a <script> tag and set the USGS URL as the source.
-        // var script = document.createElement('script');
-        // (In this example we use a locally stored copy instead.)
-        // script.src = 'http://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/2.5_week.geojsonp';
-        // script.src = '/geojson_sample.json';
-        // document.getElementsByTagName('head')[0].appendChild(script);
-
 
         // results is whatever is returned from the GET request, 
         // JSON in this case
         $.get('/crimes.json', function(results) {
-
+              var heatmapData = [];
               var crimes_found = results.crimes; // a list of dictionaries
-              console.log("This is crimes_found lat " + crimes_found[0].latitude);
-              console.log("This is crimes_found lng" + crimes_found[0].longitude);
+
+              // console.log("This is crimes_found lat " + crimes_found[0].latitude);
+              // console.log("This is crimes_found lng" + crimes_found[0].longitude);
+
               // Loop through all of the crimes in the json
               for (var i = 0; i < crimes_found.length; i++) {
                   // set a new latLng based on json items
@@ -66,18 +61,24 @@ function initMap() {
                                         crimes_found[i].latitude,
                                         crimes_found[i].longitude);
 
+                  heatmapData.push(latLng);
                   // set a new marker and place onto map
-                  var marker = new google.maps.Marker({
-                      position: latLng,
-                      map: map
-                  });
+                  // var marker = new google.maps.Marker({
+                  //     position: latLng,
+                  //     map: map
+                  // });
               } // end for
-        });
+              var heatmap = new google.maps.visualization.HeatmapLayer({
+                data: heatmapData,
+                dissipating: true,
+                radius: 20,
+                map: map
+            }); //end heatmap declaration
+        }); // end $.get
 
         // display the map
         directionsDisplay.setMap(map);
-
-    });
+    }); // end geocoder
 }
 
 // display the map

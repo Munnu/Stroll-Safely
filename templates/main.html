@@ -5,7 +5,7 @@
     <link rel=stylesheet type=text/css href='{{ url_for('static',filename='style.css')}}'>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.2/jquery.min.js"></script>
     <script
-      src="https://maps.googleapis.com/maps/api/js?libraries=visualization">
+      src="https://maps.googleapis.com/maps/api/js?libraries=geometry,visualization">
     </script>
 </head>
 <body>
@@ -16,26 +16,6 @@
     </form>
     <div id="map"></div>
 
-    <!--
-    <script src="https://maps.googleapis.com/maps/api/js?callback=initMap"
-    async defer></script>  
-    -->
-
 </body>
 </html>
-
-<!-- ----------------------------------------------------------- -->
-    <!-- Create the map itself -->
-    <script type="text/javascript" src='{{ url_for('static',filename='main.js')}}'></script>
-    <!-- Load the Google Maps API right here -->
-
-    <!--
-    <script src="https://maps.googleapis.com/maps/api/js?key=KEY-HERE&callback=initMap"
-    async defer></script>
-    -->
-
-    <!--
-    <script async defer src="https://maps.googleapis.com/maps/api/js?key=KEY-HERE&callback=initMap"
-      type="text/javascript"></script>
-    -->
 
