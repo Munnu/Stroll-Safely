@@ -28,6 +28,7 @@
  
     BEFORE LOAD DO  
      $$ drop table if exists crime_data_nyc; $$,  
+     $$ drop sequence if exists crime_data_nyc_seq; $$,
      $$ create sequence crime_data_nyc_seq; $$,
      $$ create table crime_data_nyc (  
             Crime_ID serial primary key,
@@ -48,6 +49,6 @@
             Jurisdiction text,
             XCoordinate integer,
             YCoordinate integer,
-            Location point 
+            Location text 
         );  
    $$; 

@@ -1,4 +1,4 @@
-#from flask.ext.sqlalchemy import SQLAlchemy
+from flask_sqlalchemy import SQLAlchemy
 from geoalchemy2.types import Geometry
 
 # instantiates a SQLAlchemy type
@@ -27,7 +27,8 @@ class Crime_Data_NYC(db.Model):
     jurisdiction = db.Column(db.String)
     xcoordinate = db.Column(db.Integer)
     ycoordinate = db.Column(db.Integer)
-    location = db.Column(Geometry(geometry_type='POINT', srid=4326))
+    location = db.Column(db.Integer)
+    # location = db.Column(Geometry(geometry_type='POINT', srid=4326))
 
 ####################################################
 # Helper functions
@@ -50,5 +51,3 @@ if __name__ == "__main__":
     from server import app
     connect_to_db(app)
     print "Connected to DB."
-
-    db.create_all()
