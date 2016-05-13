@@ -4,12 +4,13 @@ from geoalchemy2.types import Geometry
 # instantiates a SQLAlchemy type
 db = SQLAlchemy()
 
+
 class Crime_Data_NYC(db.Model):
     """ Crime data from NYC Open Data """
 
     __tablename__ = "crime_data_nyc"
 
-    crime_id = db.Column(db.Integer, autoincrement=True, primary_key=True) 
+    crime_id = db.Column(db.Integer, autoincrement=True, primary_key=True)
     occurrence_date = db.Column(db.DateTime)
     day_of_week = db.Column(db.String)
     occurrence_month = db.Column(db.Integer)
@@ -34,12 +35,22 @@ class Crime_Data_NYC(db.Model):
 # Helper functions
 ####################################################
 
+
+def init_app():
+    # So that we can use Flask-SQLAlchemy, we'll make a Flask app
+    from flask import Flask
+    app = Flask(__name__)
+
+    connect_to_db(app)
+    print "Connected to DB."
+
+
 def connect_to_db(app):
     """Connect the database to our Flask app."""
 
-    # Configure to use our PstgreSQL database
-    app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql:///crime_data'
-    app.config['SQLALCHEMY_ECHO'] = False       # Set to False to hide verbose output
+    # Configure to use our database
+    app.config['SQLALCHEMY_DATABASE_URI'] = 'postgres:///crime_data'
+    #app.config['SQLALCHEMY_ECHO'] = True
     db.app = app
     db.init_app(app)
 
@@ -48,6 +59,10 @@ if __name__ == "__main__":
     # As a convenience, if we run this module interactively, it will leave
     # you in a state of being able to work with the database directly.
 
-    from server import app
+    # So that we can use Flask-SQLAlchemy, we'll make a Flask app
+    from flask import Flask
+
+    app = Flask(__name__)
+
     connect_to_db(app)
     print "Connected to DB."

@@ -57,7 +57,8 @@ function initMap() {
         $.get('/crimes.json', function(results) {
 
               var crimes_found = results.crimes; // a list of dictionaries
-
+              console.log("This is crimes_found lat " + crimes_found[0].latitude);
+              console.log("This is crimes_found lng" + crimes_found[0].longitude);
               // Loop through all of the crimes in the json
               for (var i = 0; i < crimes_found.length; i++) {
                   // set a new latLng based on json items
