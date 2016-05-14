@@ -1,4 +1,4 @@
-import json
+import json, requests
 from model import Crime_Data_NYC, connect_to_db, db, init_app
 #from application import app
 from gmaps import Directions
@@ -11,8 +11,17 @@ api = Directions()
 # reminder: results returns a list
 results = api.directions((40.728783, -73.7897503),
                          (40.6497484, -73.97767999999999))
-
+# pretty formatting on json, it's great
 # print json.dumps(results, indent=2)
+
+user_coords = {}
+
+
+def get_user_destinations(user_point_a):
+    """ Gets a dictionary of the user's
+        latitude and longitude passed into json
+    """
+    user_coords['point_a'] = user_point_a
 
 
 def get_twenty():

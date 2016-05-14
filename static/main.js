@@ -4,11 +4,21 @@ var directionsService;
 
 var INFO = {};
 
+var getUserData = function(results) {
+    // display the user data that was submitted and returned back from flask
+    console.log("This is inside of getUserData " + results.lat + " " + results.lng);
+    $('#get-user-data').html(results.lat + " " + results.lng);
+};
+
 var startDirections =  function(event){
     event.preventDefault(); // need this to prevent GET on form submit refresh
     INFO.latitude = document.getElementById('start-latitude').value;
     INFO.longitude = document.getElementById('start-longitude').value;
     
+    // assemble a bunch of parameters for the json endpoint (in flask)
+    var url = '/start-end.json?lat=' + INFO.latitude + "&lng=" + INFO.longitude;
+    $.get(url, getUserData); // pass the values into the flask json endpoint
+
     calculateAndDisplayRoute(directionsService, directionsDisplay);
 
  };

@@ -1,11 +1,14 @@
-from flask import Flask, render_template, url_for, jsonify
+from flask import Flask, render_template, url_for, jsonify, request
 from flask_restful import marshal_with, fields
 from model import Crime_Data_NYC, connect_to_db
 #from model import init_app
 
-from middle import get_twenty
+from middle import get_twenty, get_user_destinations
 
 app = Flask(__name__)
+
+# trying out a ragtag thing
+user_lat_lng = ''
 
 # at somep point our routes will be .jsons
 
@@ -39,6 +42,18 @@ def index():
 def geojson_sample():
     """ return a geojson """
     return jsonify(construct())
+
+
+@app.route('/start-end.json')
+def get_user_start_end():
+    # retrieve parameters and get their data from the /start-end.json endpoint
+    lat = request.args.get('lat')
+    lng = request.args.get('lng')
+    lat_lng_dict = {'lat': lat, 'lng': lng}
+    print "This is lat_lng_dict", lat_lng_dict
+    get_user_destinations(lat_lng_dict)
+
+    return jsonify(lat_lng_dict)
 
 
 @app.route('/crimes.json')
