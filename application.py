@@ -3,7 +3,7 @@ from flask_restful import marshal_with, fields
 from model import Crime_Data_NYC, connect_to_db
 #from model import init_app
 
-from middle import get_twenty, get_user_destinations
+from middle import get_twenty, address_to_lat_lng
 
 app = Flask(__name__)
 
@@ -45,13 +45,19 @@ def geojson_sample():
 
 
 @app.route('/start-end.json')
-def get_user_start_end():
+def parse_user_start_end():
+    """ takes the user's start and end points in address form
+        and convert to latitude, longitude """
+
     # retrieve parameters and get their data from the /start-end.json endpoint
-    lat = request.args.get('lat')
-    lng = request.args.get('lng')
-    lat_lng_dict = {'lat': lat, 'lng': lng}
-    print "This is lat_lng_dict", lat_lng_dict
-    get_user_destinations(lat_lng_dict)
+    start = request.args.get('start')
+    end = request.args.get('end')
+
+    # assemble a dictionary to push into the address_to_lat_lng() function
+    start_end_dict = {'start': start, 'end': end}
+
+    # returns latitude and longitude of point A and point B
+    lat_lng_dict = address_to_lat_lng(start_end_dict)
 
     return jsonify(lat_lng_dict)
 

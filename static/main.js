@@ -2,24 +2,43 @@ var map;
 var directionsDisplay;
 var directionsService;
 
-var INFO = {};
+var START = {};
+var END = {};
 
 var getUserData = function(results) {
+    // retreive the assembled lat/lng from the flask JSON route
+    START.lat = results.point_a.lat; // for beginning route
+    START.lng = results.point_a.lng;
+
+    END.lat = results.point_b.lat; // for end route
+    END.lng = results.point_b.lng;
+
+    // console.log for debugging, keeping these in for now
+    console.log("This is START ");
+    console.log(START);
+    console.log("This is inside of getUserData START" + START.lat + " " + START.lng);
+    console.log("This is inside of getUserData END" + END.lat + " " + END.lng);
+
     // display the user data that was submitted and returned back from flask
-    console.log("This is inside of getUserData " + results.lat + " " + results.lng);
-    $('#get-user-data').html(results.lat + " " + results.lng);
+    // $('#get-user-data').html(results.point_a.lat + " " + results.point_a.lng);
+    $('#parse-user-data').html("start: " + START.lat + " " + START.lng +
+                              " end: " + END.lat + " " + END.lng);
+
+    // now that we have the start coords, load up calculateAndDisplayRoute
+    calculateAndDisplayRoute();
+
 };
 
 var startDirections =  function(event){
     event.preventDefault(); // need this to prevent GET on form submit refresh
-    INFO.latitude = document.getElementById('start-latitude').value;
-    INFO.longitude = document.getElementById('start-longitude').value;
+
+    // get the text field values inputted by the user
+    start = document.getElementById('start-point').value;
+    end = document.getElementById('end-point').value;
     
     // assemble a bunch of parameters for the json endpoint (in flask)
-    var url = '/start-end.json?lat=' + INFO.latitude + "&lng=" + INFO.longitude;
+    var url = '/start-end.json?start=' + start + "&end=" + end;
     $.get(url, getUserData); // pass the values into the flask json endpoint
-
-    calculateAndDisplayRoute(directionsService, directionsDisplay);
 
  };
 
@@ -29,7 +48,7 @@ function initMap() {
     var address = "new york";
     var center_lat, center_lng = 0;
 
-    geocoder.geocode( { 'address': address}, function(results, status) {
+    geocoder.geocode( {'address': address}, function(results, status) {
         //console.log(results);
         if (status == google.maps.GeocoderStatus.OK) {
               center_lat = results[0].geometry.location.lat();
@@ -99,14 +118,16 @@ function calculateAndDisplayRoute() {
 
       // try doing this: 40.673301, -73.780351
       // create two points: A and B
-      var latLang1 = new google.maps.LatLng(INFO.latitude, INFO.longitude);
-      var latLang2 = new google.maps.LatLng(44.540, -79);
+      console.log("Wut?");
+      console.log(START);
+      var latLangStart = new google.maps.LatLng(START.lat, START.lng);
+      var latLangEnd = new google.maps.LatLng(END.lat, END.lng);
 
       var selectedMode = "WALKING";
 
       directionsService.route({
-          origin: latLang1,  // Point A
-          destination: latLang2,  // Point B
+          origin: latLangStart,  // Point A
+          destination: latLangEnd,  // Point B
           // Note that Javascript allows us to access the constant
           // using square brackets and a string value as its
           // "property."
