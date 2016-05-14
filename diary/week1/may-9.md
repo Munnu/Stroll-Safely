@@ -50,3 +50,14 @@ My plan by the end of this week is to be able to:
 
 1. Have a bunch of crime locations to show up
 2. A way that the user can input a lat, lng for Point A, Point B and have google maps dynamically generate a route.
+
+#May 13th Log:
+There wasn't much time to work on projects today. Fridays are limited project time. I finally understand that the only way to do something like HTML to JS/jQuery to Python (or another language) is through a server. In this case, HTTP (or TCP, to be exact, yeah?). Now that I've been able to demystify how jQuery/JS work when performing that functionality (which I practiced over study break), I'm assuming I've officially made it easier for me to do JavaScript stuff now. I hope. I have been joking to myself and say I can JS my way out of a wet paper bag, just not a solid, dry one.
+
+Anyway, I managed to finish what I sought out to accomplish this week. The things I did today was:
+
+1. Get user input from the frontend and send it over to the python backend.
+2. Convert address to latitude and longitude through geocoding python library. The text fields originally took in latitude and longitude, which is less user friendly.
+3. Allow the user to input a start and a destination.
+
+Onwards to the computational side. Wish me the best. I have to review the more obscure libraries and/or find ways to make the next part work out.

@@ -1,11 +1,12 @@
 import json, requests
 from model import Crime_Data_NYC, connect_to_db, db, init_app
 #from application import app
-from gmaps import Directions
+from gmaps import Directions, Geocoding
 
 init_app()
 
 api = Directions()
+geocoding = Geocoding(sensor=False)
 
 # start and end coordinates in directions
 # reminder: results returns a list
@@ -17,11 +18,23 @@ results = api.directions((40.728783, -73.7897503),
 user_coords = {}
 
 
-def get_user_destinations(user_point_a):
-    """ Gets a dictionary of the user's
-        latitude and longitude passed into json
-    """
-    user_coords['point_a'] = user_point_a
+def address_to_lat_lng(user_points):
+    """ Generates a dictionary of the user's latitude and
+        longitude based on address passed into json """
+
+    # get the start and end address from the parameter
+    point_a = user_points['start']
+    point_b = user_points['end']
+
+    # geocoding magic to convert address to a bunch of properties
+    point_a_geo_results = geocoding.geocode(point_a)[0]
+    point_b_geo_results = geocoding.geocode(point_b)[0]
+
+    # extract out the latitude and longitude of the geocoding dict results
+    user_coords['point_a'] = point_a_geo_results['geometry']['location']
+    user_coords['point_b'] = point_b_geo_results['geometry']['location']
+
+    return user_coords
 
 
 def get_twenty():
