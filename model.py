@@ -1,4 +1,5 @@
 from flask_sqlalchemy import SQLAlchemy
+from sqlalchemy import create_engine
 from geoalchemy2.types import Geometry
 
 # instantiates a SQLAlchemy type
@@ -13,7 +14,7 @@ class Crime_Data_NYC(db.Model):
     crime_id = db.Column(db.Integer, autoincrement=True, primary_key=True)
     occurrence_date = db.Column(db.DateTime)
     day_of_week = db.Column(db.String)
-    occurrence_month = db.Column(db.Integer)
+    occurrence_month = db.Column(db.String)
     occurrence_day = db.Column(db.Integer)
     occurrence_year = db.Column(db.Integer)
     occurrence_hour = db.Column(db.Integer)
@@ -28,8 +29,13 @@ class Crime_Data_NYC(db.Model):
     jurisdiction = db.Column(db.String)
     xcoordinate = db.Column(db.Integer)
     ycoordinate = db.Column(db.Integer)
-    location = db.Column(db.Integer)
+    location = db.Column(db.String)
+    latitude = db.Column(db.Float)
+    longitude = db.Column(db.Float)
+    # location = db.Column(Geometry(geometry_type='POINT'))
+    # location = db.Column(db.Integer)
     # location = db.Column(Geometry(geometry_type='POINT', srid=4326))
+
 
 ####################################################
 # Helper functions
@@ -45,11 +51,11 @@ def init_app():
     print "Connected to DB."
 
 
-def connect_to_db(app):
+def connect_to_db(app, db_uri='postgres:///crime_data'):
     """Connect the database to our Flask app."""
 
     # Configure to use our database
-    app.config['SQLALCHEMY_DATABASE_URI'] = 'postgres:///crime_data'
+    app.config['SQLALCHEMY_DATABASE_URI'] = db_uri
     #app.config['SQLALCHEMY_ECHO'] = True
     db.app = app
     db.init_app(app)

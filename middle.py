@@ -15,12 +15,12 @@ results = api.directions((40.728783, -73.7897503),
 # pretty formatting on json, it's great
 # print json.dumps(results, indent=2)
 
-user_coords = {}
-
 
 def address_to_lat_lng(user_points):
     """ Generates a dictionary of the user's latitude and
         longitude based on address passed into json """
+
+    user_coords = {}
 
     # get the start and end address from the parameter
     point_a = user_points['start']
@@ -31,10 +31,36 @@ def address_to_lat_lng(user_points):
     point_b_geo_results = geocoding.geocode(point_b)[0]
 
     # extract out the latitude and longitude of the geocoding dict results
+    # format is {'point_a': {'lat': ..., 'lng': ...}, 'point_b': {...}}
     user_coords['point_a'] = point_a_geo_results['geometry']['location']
     user_coords['point_b'] = point_b_geo_results['geometry']['location']
 
     return user_coords
+
+
+def generate_bounds():
+    """ draws the bounds for safety analysis around what will be the
+        user defined route """
+
+    user_coords = {
+                      "point_a": {"lat": 40.760385, "lng": -73.9766736},
+                      "point_b": {"lat": 40.7539472, "lng": -73.9811953}
+                    }
+
+    if user_coords:
+        # takes in user_coords point a and point b
+        # in order to determine top left and bottom right coordinates.
+        point_a = user_coords['point_a']
+        point_b = user_coords['point_b']
+
+        # compare latitude to see what's the top coord, tupleize
+
+        top_left_coord = (max(point_a['lat'], point_b['lng']),
+                          min(point_a['lat'], point_b['lng']))
+        bottom_right_coord = (min(point_a['lat'], point_b['lat']),
+                              max(point_a['lng'], point_b['lng']))
+
+        print top_left_coord, bottom_right_coord
 
 
 def get_twenty():
@@ -44,6 +70,7 @@ def get_twenty():
 
     crimes_coords = {'crimes': []}
 
+    print "\n\n\nAAAAAAAAAAAAAAAAAA!!!!!", twenty_entries[0], "\n\n\n\n\n"
     for entry in twenty_entries:
         # get the location in string format of "(0, 0)"
         # and other nasty string to float conversion stuff here
