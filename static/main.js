@@ -73,6 +73,40 @@ function initMap() {
             zoom: 8
         });
 
+        // (40.760385, -73.9811953) (40.7539472, -73.9766736)
+        // playing around with markers again to see if bound square works
+        var marker = new google.maps.Marker({
+                          position: {lat: 40.760385, lng: -73.9811953},
+                          map: map,
+                          title: 'Top Left'
+                        });
+
+        var marker = new google.maps.Marker({
+                          position: {lat: 40.7539472, lng: -73.9766736},
+                          map: map,
+                          title: 'Bottom Right'
+                        });
+
+        // {
+        //   north: 40.7539472,
+        //   south: 40.760385,
+        //   east: -73.9766736,
+        //   west: -73.9811953
+        // }
+        // northeast and southwest needed to generate rectangle
+        var latlng_bounds = new google.maps.LatLngBounds(
+                                 new google.maps.LatLng(40.7539472, -73.9811953),
+                                 new google.maps.LatLng(40.760385, -73.9766736))
+
+        var rectangle = new google.maps.Rectangle({
+                              strokeColor: '#000000',
+                              strokeOpacity: 0.8,
+                              strokeWeight: 2,
+                              fillColor: '#000000',
+                              fillOpacity: 0.35,
+                              map: map,
+                              bounds: latlng_bounds
+                            });
 
         // results is whatever is returned from the GET request, 
         // JSON in this case
