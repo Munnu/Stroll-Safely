@@ -40,7 +40,8 @@ def address_to_lat_lng(user_points):
     # call generate_bounds, this does the trick
     inner_boundary_coords = generate_bounds(user_coords)  # returns a tuple
     print "\n\n\n\n THIS IS INNER_BOUNDARY_COORDS", inner_boundary_coords
-    # user_coords['top_left_inner_bound']
+    user_coords['top_left_inner_bound'] = inner_boundary_coords[0]
+    user_coords['bottom_right_inner_bound'] = inner_boundary_coords[1]
 
     return user_coords
 
@@ -58,12 +59,12 @@ def generate_bounds(user_coords):
 
     # compare latitude to see what's the top coord, tupleize
     # add 0.005 to latitude, and subtract 0.02 to longitude
-    top_left_coord = (max(point_a['lat'], point_b['lat']) + 0.005,
-                      min(point_a['lng'], point_b['lng']) - 0.02)
+    top_left_coord = {'lat': max(point_a['lat'], point_b['lat']) + 0.005,
+                      'lng': min(point_a['lng'], point_b['lng']) - 0.02}
 
     # subtract 0.005 to latitude, and add 0.02 to longitude
-    bottom_right_coord = (min(point_a['lat'], point_b['lat']) - 0.005,
-                          max(point_a['lng'], point_b['lng']) + 0.02)
+    bottom_right_coord = {'lat': min(point_a['lat'], point_b['lat']) - 0.005,
+                          'lng': max(point_a['lng'], point_b['lng']) + 0.02}
 
     print "this is the top_left_coord and bottom_right_coord", \
                 top_left_coord, bottom_right_coord

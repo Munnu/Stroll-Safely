@@ -3,3 +3,12 @@ I didn't feel like I did a lot but I did something. I tried to write a couple of
 
 
 I tried to do a little bit of the bounds creation. I haven't gotten to the point where I can display my top left and bottom right corners, but right now I am assuming they work. I am missing some sort of weird crucial piece as to generating that bound. I know that the only way for me to generate a bound is whenever there is a start and end address loaded into the map itself. Once I can think through that part and confirm that the top left and bottom right coords make sense, I'll definitely be on the right track.
+
+#May 17th Log:
+I forgot to do a log for today but I am writing this on the 18th. I have a tendency to be into the woods and think that there is a much better way to do things and then spin my wheels. It was suggested to me to use PostGIS but I don't think I have time to learn this new technology. I also spent a lot of time yesterday trying to figure out how to generate bounds. It was really simple. A matter of adding 0.01 or something to latitude and longitude values to create a buffer based on the latitude and longitude of the route generated. I knew that, but at the same time I thought it needed to be way more complex, that and I couldn't get my bounds to agree. I found out I had a slight typo somewhere. 
+
+[This wiki resource on Decimal Degrees](https://en.wikipedia.org/wiki/Decimal_degrees) was helpful to me in order to understand how many decimal points equal to a block or two. I also recognized that my bounds can go beyond the size of the land itself and into the water because it is highly unlikely that I would have to route through water (is that even possible with google maps), or have a crime that's positioned in the water.
+
+I also generated this script that is still running as I speak (On May 18th minutes to 1pm) that would decimalize the latitude and longitude into their separate columns. Right now in my table the location (latitude, longitude) is of type text. I wanted to use Point but that's a learning curve I don't have time for this week. I want to be able to finish up my algorithm. My entries are over 1.1 million in my database and since I'm using python to do string magic and populate these two columns, it's been taking hours to do.
+
+What I need to do for the May 18th is to create a 2d array grid based on the latitude and longitude values and section them into N pieces, then find the crimes that fit inside of each block. Once I do that, one half of my algorithm will be complete.

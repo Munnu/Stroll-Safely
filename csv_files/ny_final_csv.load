@@ -58,6 +58,7 @@
             Jurisdiction text,
             XCoordinate integer,
             YCoordinate integer,
+            --Location geometry(point),
             Location text,
             Latitude Decimal,
             Longitude Decimal

@@ -5,6 +5,9 @@ var directionsService;
 var START = {};
 var END = {};
 
+var NORTHEASTINNER = {};
+var SOUTHWESTINNER = {};
+
 var getUserData = function(results) {
     // retreive the assembled lat/lng from the flask JSON route
     START.lat = results.point_a.lat; // for beginning route
@@ -19,6 +22,16 @@ var getUserData = function(results) {
     console.log("This is inside of getUserData START" + START.lat + " " + START.lng);
     console.log("This is inside of getUserData END" + END.lat + " " + END.lng);
 
+    // get the inner bounds too
+    NORTHEASTINNER.lat = results.top_left_inner_bound.lat;
+    NORTHEASTINNER.lng = results.top_left_inner_bound.lng;
+
+    console.log("Testing NORTHEASTINNER", NORTHEASTINNER);
+
+    SOUTHWESTINNER.lat = results.bottom_right_inner_bound.lat;
+    SOUTHWESTINNER.lng = results.bottom_right_inner_bound.lng;
+
+
     // display the user data that was submitted and returned back from flask
     // $('#get-user-data').html(results.point_a.lat + " " + results.point_a.lng);
     $('#parse-user-data').html("start: " + START.lat + " " + START.lng +
@@ -26,6 +39,7 @@ var getUserData = function(results) {
 
     // now that we have the start coords, load up calculateAndDisplayRoute
     calculateAndDisplayRoute();
+    generateBounds(); // and generate the small bounding box
 
 };
 
@@ -73,66 +87,7 @@ function initMap() {
             zoom: 12
         });
 
-        // original start(40.760385 -73.9766736) end(40.7539472 -73.9811953)
-        // (40.760385, -73.9811953) (40.7539472, -73.9766736)
-        // playing around with markers again to see if bound square works
-        var top_left_small = new google.maps.Marker({ // added 0.005 to lat, 0.02 lng
-                          position: {lat: 40.765385, lng: -73.9966736},
-                          map: map,
-                          title: 'Top Left'
-                        });
 
-        var bottom_right_small = new google.maps.Marker({ // added 0.005 to lat, 0.02 lng
-                          position: {lat: 40.7489472, lng: -73.9611953},
-                          map: map,
-                          title: 'Bottom Right'
-                        });
-
-        var bottom_right_big = new google.maps.Marker({ // 40.474839, -73.447959
-                          position: {lat: 40.474839, lng: -73.447959},
-                          map: map,
-                          title: 'Extreme outer bounds bottom right'
-                        });
-        var top_left_big = new google.maps.Marker({ // 40.937264, -74.288455
-                          position: {lat: 40.937264, lng: -74.288455},
-                          map: map,
-                          title: 'Extreme outer bounds top left'
-                        });
-
-        // {
-        //   north: 40.7539472,
-        //   south: 40.760385,
-        //   east: -73.9766736,
-        //   west: -73.9811953
-        // }
-        // northeast and southwest needed to generate rectangle
-        var small_latlng_bounds = new google.maps.LatLngBounds(
-                                   new google.maps.LatLng(40.765385, -73.9966736),
-                                   new google.maps.LatLng(40.7489472, -73.9611953));
-
-        var large_latlng_bounds = new google.maps.LatLngBounds(
-                                    new google.maps.LatLng(40.937264, -74.288455),
-                                    new google.maps.LatLng(40.474839, -73.447959));
-
-        var rectangle = new google.maps.Rectangle({
-                              strokeColor: '#000000',
-                              strokeOpacity: 0.8,
-                              strokeWeight: 2,
-                              fillColor: '#000000',
-                              fillOpacity: 0.35,
-                              map: map,
-                              bounds: small_latlng_bounds
-                            });
-
-        var outer_rectangle = new google.maps.Rectangle({
-                              strokeColor: '#3300ff',
-                              strokeOpacity: 0.8,
-                              strokeWeight: 2,
-                              fillColor: '#3300ff',
-                              fillOpacity: 0.35,
-                              map: map,
-                              bounds: large_latlng_bounds
-                            });
         // results is whatever is returned from the GET request, 
         // JSON in this case
         $.get('/crimes.json', function(results) {
@@ -172,6 +127,75 @@ function initMap() {
 // display the map
 google.maps.event.addDomListener(window, 'load', initMap);
 
+function generateBounds() {
+        // this section generates the inner and outer bounding box
+
+        // original start(40.760385 -73.9766736) end(40.7539472 -73.9811953)
+        // (40.760385, -73.9811953) (40.7539472, -73.9766736)
+        // playing around with markers again to see if bound square works
+        // var top_left_small = new google.maps.Marker({ // added 0.005 to lat, 0.02 lng
+        //                   position: {lat: 40.765385, lng: -73.9966736},
+        //                   map: map,
+        //                   title: 'Top Left'
+        //                 });
+
+        // var bottom_right_small = new google.maps.Marker({ // added 0.005 to lat, 0.02 lng
+        //                   position: {lat: 40.7489472, lng: -73.9611953},
+        //                   map: map,
+        //                   title: 'Bottom Right'
+        //                 });
+
+        var bottom_right_big = new google.maps.Marker({ // 40.474839, -73.447959
+                          position: {lat: 40.474839, lng: -73.447959},
+                          map: map,
+                          title: 'Extreme outer bounds bottom right'
+                        });
+        var top_left_big = new google.maps.Marker({ // 40.937264, -74.288455
+                          position: {lat: 40.937264, lng: -74.288455},
+                          map: map,
+                          title: 'Extreme outer bounds top left'
+                        });
+
+        // {
+        //   north: 40.7539472,
+        //   south: 40.760385,
+        //   east: -73.9766736,
+        //   west: -73.9811953
+        // }
+        // northeast and southwest needed to generate rectangle
+        // var small_latlng_bounds = new google.maps.LatLngBounds(
+        //                            new google.maps.LatLng(40.765385, -73.9966736),
+        //                            new google.maps.LatLng(40.7489472, -73.9611953));
+        console.log("This is NORTHEASTINNER", NORTHEASTINNER);
+        var small_latlng_bounds = new google.maps.LatLngBounds(
+                                   new google.maps.LatLng(NORTHEASTINNER),
+                                   new google.maps.LatLng(SOUTHWESTINNER));
+
+        var large_latlng_bounds = new google.maps.LatLngBounds(
+                                    new google.maps.LatLng(40.937264, -74.288455),
+                                    new google.maps.LatLng(40.474839, -73.447959));
+
+
+        var inner_rectangle = new google.maps.Rectangle({
+                              strokeColor: '#000000',
+                              strokeOpacity: 0.15,
+                              strokeWeight: 2,
+                              fillColor: '#000000',
+                              fillOpacity: 0.1,
+                              map: map,
+                              bounds: small_latlng_bounds
+                            });
+
+        var outer_rectangle = new google.maps.Rectangle({
+                              strokeColor: '#ffff00',
+                              strokeOpacity: 0.4,
+                              strokeWeight: 2,
+                              fillColor: '#ffff00',
+                              fillOpacity: 0.2,
+                              map: map,
+                              bounds: large_latlng_bounds
+                            });
+}
 
 function calculateAndDisplayRoute() {
 

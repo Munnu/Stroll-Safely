@@ -30,6 +30,7 @@ class Crime_Data_NYC(db.Model):
     xcoordinate = db.Column(db.Integer)
     ycoordinate = db.Column(db.Integer)
     location = db.Column(db.String)
+    # location = db.Column(Geometry(geometry_type='POINT'))
     latitude = db.Column(db.Float)
     longitude = db.Column(db.Float)
     # location = db.Column(Geometry(geometry_type='POINT'))
