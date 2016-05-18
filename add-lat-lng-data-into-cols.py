@@ -12,7 +12,7 @@ def insert_lat_lng_values():
 
     for n in range(number_of_rows/batch_size + 1):
         print "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n BEGIN!"
-        all_the_crimes = Crime_Data_NYC.query.offset(n).limit(batch_size).all()
+        all_the_crimes = Crime_Data_NYC.query.filter_by(latitude=None).offset(n).limit(batch_size).all()
 
         print "\n\n\n\n this is the length of all of the crimes in the db", len(all_the_crimes)
 
