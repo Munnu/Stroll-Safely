@@ -1,3 +1,10 @@
+# ------------------------------------------------------------------------------
+# This file holds all of the code that interacts with flask.
+# For instance, it does the geocoding part (address_to_lat_lng)
+# It dynamically generates the bounds based on the user's start and end location
+# Gets the crime records
+# ------------------------------------------------------------------------------
+
 import json, requests
 from model import Crime_Data_NYC, connect_to_db, db, init_app
 #from application import app
@@ -43,7 +50,54 @@ def address_to_lat_lng(user_points):
     user_coords['top_left_inner_bound'] = inner_boundary_coords[0]
     user_coords['bottom_right_inner_bound'] = inner_boundary_coords[1]
 
+    # Let's see how generate_crime_grid loads
+    generate_crime_grid(user_coords)
+
     return user_coords
+
+
+def generate_crime_grid(user_coords):
+    """ This takes the bounds based on the user's route and
+        generates the crime (relative location) crime grid """
+
+    crime_array = []  # initalize an empty (2d) array
+
+    chunk_number = 4  # just an arbitrary number to break up grid
+
+    # end_x - start_x, divided by arbitary number to break up grid into N slots
+    offset_x = ( user_coords['bottom_right_inner_bound']['lng']
+                 - user_coords['top_left_inner_bound']['lng'] ) / chunk_number
+
+    # end_y - start_y, divided by arbitrary number to break up grid into N slots
+    offset_y = ( user_coords['bottom_right_inner_bound']['lat']
+                 - user_coords['top_left_inner_bound']['lat'] ) / chunk_number
+
+    # take the user_coords from address_to_lat_lng and get inner_boundary_coords
+    # for the top_left_inner_bound and bottom_right_inner_bound
+    start_position = user_coords['top_left_inner_bound']  # lat, lng start pos
+    next_position_x = start_position['lng']
+    next_position_y = start_position['lat']
+
+    # print statements city
+    print "------------------------------------------------------------------"
+    print "This is user_coords", user_coords
+    print "This is offset_x, offset_y", offset_x, offset_y
+    print "This is start_position", start_position
+    print "This is next_position_x, next_position_y", next_position_x, next_position_y
+    print "------------------------------------------------------------------"
+
+    for i in range(chunk_number):
+        # outer for loop, we will do looping column-wise [x] second
+        for j in range(chunk_number):
+            # inner for loop, we will do by looping row-wise [y] first
+
+            # get the next_position_y and next_position_x and insert it into 2d array
+            crime_array.append([next_position_y, next_position_x])
+            # bump up the offset in the x direction
+            next_position_y += offset_y
+        # bump up the offset in the y direction
+        next_position_x += offset_x
+    print "\n\n\n\nThis is a test", crime_array
 
 
 def generate_bounds(user_coords):
