@@ -88,17 +88,16 @@ function initMap() {
                           title: 'Bottom Right'
                         });
 
-        // var marker = new google.maps.Marker({
-        //                   position: {lat: 40.766385, lng: -73.9851953},
-        //                   map: map,
-        //                   title: 'Top Left prime'
-        //                 });
-
-        // var marker = new google.maps.Marker({
-        //                   position: {lat: 40.7506472, lng: -73.9716736},
-        //                   map: map,
-        //                   title: 'Bottom Right prime'
-        //                 });
+        var bottom_right_big = new google.maps.Marker({ // 40.474839, -73.447959
+                          position: {lat: 40.474839, lng: -73.447959},
+                          map: map,
+                          title: 'Extreme outer bounds bottom right'
+                        });
+        var top_left_big = new google.maps.Marker({ // 40.937264, -74.288455
+                          position: {lat: 40.937264, lng: -74.288455},
+                          map: map,
+                          title: 'Extreme outer bounds top left'
+                        });
 
         // {
         //   north: 40.7539472,
@@ -111,6 +110,10 @@ function initMap() {
                                  new google.maps.LatLng(40.765385, -73.9966736),
                                  new google.maps.LatLng(40.7489472, -73.9611953));
 
+        var large_latlng_bounds = new google.maps.LatLngBounds(
+                                    new google.maps.LatLng(40.937264, -74.288455),
+                                    new google.maps.LatLng(40.474839, -73.447959));
+
         var rectangle = new google.maps.Rectangle({
                               strokeColor: '#000000',
                               strokeOpacity: 0.8,
@@ -121,6 +124,15 @@ function initMap() {
                               bounds: latlng_bounds
                             });
 
+        var outer_rectangle = new google.maps.Rectangle({
+                              strokeColor: '#3300ff',
+                              strokeOpacity: 0.8,
+                              strokeWeight: 2,
+                              fillColor: '#3300ff',
+                              fillOpacity: 0.35,
+                              map: map,
+                              bounds: large_latlng_bounds
+                            });
         // results is whatever is returned from the GET request, 
         // JSON in this case
         $.get('/crimes.json', function(results) {
