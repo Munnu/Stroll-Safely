@@ -87,6 +87,29 @@ function initMap() {
             zoom: 12
         });
 
+        var bottom_right_big = new google.maps.Marker({ // 40.474839, -73.447959
+                          position: {lat: 40.474839, lng: -73.447959},
+                          map: map,
+                          title: 'Extreme outer bounds bottom right'
+                        });
+        var top_left_big = new google.maps.Marker({ // 40.937264, -74.288455
+                          position: {lat: 40.937264, lng: -74.288455},
+                          map: map,
+                          title: 'Extreme outer bounds top left'
+                        });
+        var large_latlng_bounds = new google.maps.LatLngBounds(
+                                    new google.maps.LatLng(40.937264, -74.288455),
+                                    new google.maps.LatLng(40.474839, -73.447959));
+        
+        var outer_rectangle = new google.maps.Rectangle({
+                              strokeColor: '#ffff00',
+                              strokeOpacity: 0.4,
+                              strokeWeight: 2,
+                              fillColor: '#ffff00',
+                              fillOpacity: 0.2,
+                              map: map,
+                              bounds: large_latlng_bounds
+                            });
 
         // results is whatever is returned from the GET request, 
         // JSON in this case
@@ -145,16 +168,6 @@ function generateBounds() {
         //                   title: 'Bottom Right'
         //                 });
 
-        var bottom_right_big = new google.maps.Marker({ // 40.474839, -73.447959
-                          position: {lat: 40.474839, lng: -73.447959},
-                          map: map,
-                          title: 'Extreme outer bounds bottom right'
-                        });
-        var top_left_big = new google.maps.Marker({ // 40.937264, -74.288455
-                          position: {lat: 40.937264, lng: -74.288455},
-                          map: map,
-                          title: 'Extreme outer bounds top left'
-                        });
 
         // {
         //   north: 40.7539472,
@@ -171,11 +184,6 @@ function generateBounds() {
                                    new google.maps.LatLng(NORTHEASTINNER),
                                    new google.maps.LatLng(SOUTHWESTINNER));
 
-        var large_latlng_bounds = new google.maps.LatLngBounds(
-                                    new google.maps.LatLng(40.937264, -74.288455),
-                                    new google.maps.LatLng(40.474839, -73.447959));
-
-
         var inner_rectangle = new google.maps.Rectangle({
                               strokeColor: '#000000',
                               strokeOpacity: 0.15,
@@ -186,15 +194,7 @@ function generateBounds() {
                               bounds: small_latlng_bounds
                             });
 
-        var outer_rectangle = new google.maps.Rectangle({
-                              strokeColor: '#ffff00',
-                              strokeOpacity: 0.4,
-                              strokeWeight: 2,
-                              fillColor: '#ffff00',
-                              fillOpacity: 0.2,
-                              map: map,
-                              bounds: large_latlng_bounds
-                            });
+
 }
 
 function calculateAndDisplayRoute() {
