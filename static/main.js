@@ -76,13 +76,13 @@ function initMap() {
         // original start(40.760385 -73.9766736) end(40.7539472 -73.9811953)
         // (40.760385, -73.9811953) (40.7539472, -73.9766736)
         // playing around with markers again to see if bound square works
-        var marker = new google.maps.Marker({ // added 0.005 to lat, 0.02 lng
+        var top_left_small = new google.maps.Marker({ // added 0.005 to lat, 0.02 lng
                           position: {lat: 40.765385, lng: -73.9966736},
                           map: map,
                           title: 'Top Left'
                         });
 
-        var marker = new google.maps.Marker({ // added 0.005 to lat, 0.02 lng
+        var bottom_right_small = new google.maps.Marker({ // added 0.005 to lat, 0.02 lng
                           position: {lat: 40.7489472, lng: -73.9611953},
                           map: map,
                           title: 'Bottom Right'
@@ -106,9 +106,9 @@ function initMap() {
         //   west: -73.9811953
         // }
         // northeast and southwest needed to generate rectangle
-        var latlng_bounds = new google.maps.LatLngBounds(
-                                 new google.maps.LatLng(40.765385, -73.9966736),
-                                 new google.maps.LatLng(40.7489472, -73.9611953));
+        var small_latlng_bounds = new google.maps.LatLngBounds(
+                                   new google.maps.LatLng(40.765385, -73.9966736),
+                                   new google.maps.LatLng(40.7489472, -73.9611953));
 
         var large_latlng_bounds = new google.maps.LatLngBounds(
                                     new google.maps.LatLng(40.937264, -74.288455),
@@ -121,7 +121,7 @@ function initMap() {
                               fillColor: '#000000',
                               fillOpacity: 0.35,
                               map: map,
-                              bounds: latlng_bounds
+                              bounds: small_latlng_bounds
                             });
 
         var outer_rectangle = new google.maps.Rectangle({

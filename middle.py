@@ -35,32 +35,39 @@ def address_to_lat_lng(user_points):
     user_coords['point_a'] = point_a_geo_results['geometry']['location']
     user_coords['point_b'] = point_b_geo_results['geometry']['location']
 
+    # new edition! We will also add in the inner bounds that the route will encompass
+    # first we need to find out which corners are our top left and bottom right
+    # call generate_bounds, this does the trick
+    inner_boundary_coords = generate_bounds(user_coords)  # returns a tuple
+    print "\n\n\n\n THIS IS INNER_BOUNDARY_COORDS", inner_boundary_coords
+    # user_coords['top_left_inner_bound']
+
     return user_coords
 
 
-def generate_bounds():
+def generate_bounds(user_coords):
     """ draws the bounds for safety analysis around what will be the
         user defined route """
 
-    user_coords = {
-                      "point_a": {"lat": 40.760385, "lng": -73.9766736},
-                      "point_b": {"lat": 40.7539472, "lng": -73.9811953}
-                    }
+    print "this is user_coords from generate_bounds", user_coords
 
-    if user_coords:
-        # takes in user_coords point a and point b
-        # in order to determine top left and bottom right coordinates.
-        point_a = user_coords['point_a']
-        point_b = user_coords['point_b']
+    # takes in user_coords point a and point b
+    # in order to determine top left and bottom right coordinates.
+    point_a = user_coords['point_a']
+    point_b = user_coords['point_b']
 
-        # compare latitude to see what's the top coord, tupleize
+    # compare latitude to see what's the top coord, tupleize
+    # add 0.005 to latitude, and subtract 0.02 to longitude
+    top_left_coord = (max(point_a['lat'], point_b['lat']) + 0.005,
+                      min(point_a['lng'], point_b['lng']) - 0.02)
 
-        top_left_coord = (max(point_a['lat'], point_b['lat']),
-                          min(point_a['lng'], point_b['lng']))
-        bottom_right_coord = (min(point_a['lat'], point_b['lat']),
-                              max(point_a['lng'], point_b['lng']))
+    # subtract 0.005 to latitude, and add 0.02 to longitude
+    bottom_right_coord = (min(point_a['lat'], point_b['lat']) - 0.005,
+                          max(point_a['lng'], point_b['lng']) + 0.02)
 
-        print top_left_coord, bottom_right_coord
+    print "this is the top_left_coord and bottom_right_coord", \
+                top_left_coord, bottom_right_coord
+    return (top_left_coord, bottom_right_coord)
 
 
 def get_twenty():
