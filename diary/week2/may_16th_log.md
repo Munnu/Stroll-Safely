@@ -12,3 +12,6 @@ I forgot to do a log for today but I am writing this on the 18th. I have a tende
 I also generated this script that is still running as I speak (On May 18th minutes to 1pm) that would decimalize the latitude and longitude into their separate columns. Right now in my table the location (latitude, longitude) is of type text. I wanted to use Point but that's a learning curve I don't have time for this week. I want to be able to finish up my algorithm. My entries are over 1.1 million in my database and since I'm using python to do string magic and populate these two columns, it's been taking hours to do.
 
 What I need to do for the May 18th is to create a 2d array grid based on the latitude and longitude values and section them into N pieces, then find the crimes that fit inside of each block. Once I do that, one half of my algorithm will be complete.
+
+#May 18th Log:
+I don't know why but my brain went for a second lunch later today and I forgot how to implement a 2d array and had to noodle around in my python terminal. Oh the simple things in life.
