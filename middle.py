@@ -55,8 +55,8 @@ def generate_bounds():
 
         # compare latitude to see what's the top coord, tupleize
 
-        top_left_coord = (max(point_a['lat'], point_b['lng']),
-                          min(point_a['lat'], point_b['lng']))
+        top_left_coord = (max(point_a['lat'], point_b['lat']),
+                          min(point_a['lng'], point_b['lng']))
         bottom_right_coord = (min(point_a['lat'], point_b['lat']),
                               max(point_a['lng'], point_b['lng']))
 

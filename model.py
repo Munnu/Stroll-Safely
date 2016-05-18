@@ -56,7 +56,7 @@ def connect_to_db(app, db_uri='postgres:///crime_data'):
 
     # Configure to use our database
     app.config['SQLALCHEMY_DATABASE_URI'] = db_uri
-    #app.config['SQLALCHEMY_ECHO'] = True
+    app.config['SQLALCHEMY_ECHO'] = True
     db.app = app
     db.init_app(app)
 

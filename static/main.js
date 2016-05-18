@@ -45,7 +45,7 @@ var startDirections =  function(event){
 function initMap() {
 
     var geocoder = new google.maps.Geocoder();
-    var address = "new york";
+    var address = "central park new york";
     var center_lat, center_lng = 0;
 
     geocoder.geocode( {'address': address}, function(results, status) {
@@ -70,22 +70,35 @@ function initMap() {
         // and options for the map
         map = new google.maps.Map(mapDiv, {
             center: centerPoint,
-            zoom: 8
+            zoom: 12
         });
 
+        // original start(40.760385 -73.9766736) end(40.7539472 -73.9811953)
         // (40.760385, -73.9811953) (40.7539472, -73.9766736)
         // playing around with markers again to see if bound square works
-        var marker = new google.maps.Marker({
-                          position: {lat: 40.760385, lng: -73.9811953},
+        var marker = new google.maps.Marker({ // added 0.005 to lat, 0.02 lng
+                          position: {lat: 40.765385, lng: -73.9966736},
                           map: map,
                           title: 'Top Left'
                         });
 
-        var marker = new google.maps.Marker({
-                          position: {lat: 40.7539472, lng: -73.9766736},
+        var marker = new google.maps.Marker({ // added 0.005 to lat, 0.02 lng
+                          position: {lat: 40.7489472, lng: -73.9611953},
                           map: map,
                           title: 'Bottom Right'
                         });
+
+        // var marker = new google.maps.Marker({
+        //                   position: {lat: 40.766385, lng: -73.9851953},
+        //                   map: map,
+        //                   title: 'Top Left prime'
+        //                 });
+
+        // var marker = new google.maps.Marker({
+        //                   position: {lat: 40.7506472, lng: -73.9716736},
+        //                   map: map,
+        //                   title: 'Bottom Right prime'
+        //                 });
 
         // {
         //   north: 40.7539472,
@@ -95,8 +108,8 @@ function initMap() {
         // }
         // northeast and southwest needed to generate rectangle
         var latlng_bounds = new google.maps.LatLngBounds(
-                                 new google.maps.LatLng(40.7539472, -73.9811953),
-                                 new google.maps.LatLng(40.760385, -73.9766736))
+                                 new google.maps.LatLng(40.765385, -73.9966736),
+                                 new google.maps.LatLng(40.7489472, -73.9611953));
 
         var rectangle = new google.maps.Rectangle({
                               strokeColor: '#000000',
