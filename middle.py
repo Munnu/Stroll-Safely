@@ -75,46 +75,72 @@ def generate_crime_grid(user_coords):
 
     # take the user_coords from address_to_lat_lng and get inner_boundary_coords
     # for the top_left_inner_bound and bottom_right_inner_bound
-    start_position = user_coords['top_left_inner_bound']  # lat, lng start pos
-    next_position_x = start_position['lng']
-    next_position_y = start_position['lat']
+    start_position_x = user_coords['top_left_inner_bound']['lng']
+    start_position_y = user_coords['top_left_inner_bound']['lat']
+
+    next_position_x = user_coords['top_left_inner_bound']['lng'] + offset_x
+    next_position_y = user_coords['top_left_inner_bound']['lat'] + offset_y
 
     # print statements city
     print "------------------------------------------------------------------"
     print "This is user_coords", user_coords
     print "This is offset_x, offset_y", offset_x, offset_y
-    print "This is start_position", start_position
+    print "This is start_position", start_position_x, start_position_y
     print "This is next_position_x, next_position_y", next_position_x, next_position_y
     print "------------------------------------------------------------------"
 
+    # test_query = Crime_Data_NYC.query.filter(and_(
+    #         and_(
+    #             Crime_Data_NYC.longitude >= start_position_x,
+    #             Crime_Data_NYC.longitude < next_position_x),
+    #         and_(
+    #             Crime_Data_NYC.latitude > next_position_y,
+    #             Crime_Data_NYC.latitude <= start_position_y)
+    #         )
+    #     ).order_by(Crime_Data_NYC.longitude.desc()).all()
+    # print "Test query:"
+    # print len(test_query)
     for i in range(chunk_number):
         # outer for loop, we will do looping column-wise [x] second
         for j in range(chunk_number):
             # inner for loop, we will do by looping row-wise [y] first
+            test_query = Crime_Data_NYC.query.filter(and_(
+                    and_(
+                        Crime_Data_NYC.longitude >= start_position_x,
+                        Crime_Data_NYC.longitude < next_position_x),
+                    and_(
+                        Crime_Data_NYC.latitude > next_position_y,
+                        Crime_Data_NYC.latitude <= start_position_y)
+                    )
+                ).order_by(Crime_Data_NYC.longitude.desc()).all()
+            print "Test query:"
+            print len(test_query)
 
             # get the next_position_y and next_position_x and insert it into 2d array
-            crime_array.append([next_position_y, next_position_x])
+            crime_array.append([start_position_y, start_position_x])
 
-            # playing around with sql queries
-            test_query = Crime_Data_NYC.query.filter(
-                and_(
-                    and_(Crime_Data_NYC.longitude >= next_position_x,
-                    Crime_Data_NYC.longitude < next_position_x + offset_x),
-                    and_(Crime_Data_NYC.latitude >= next_position_y,
-                        Crime_Data_NYC.latitude < next_position_y + offset_y)
-                    )
-                ).limit(20).all()
-
-            print "====================================="
-            print test_query
-            print "====================================="
-            
-            # bump up the offset in the x direction
-            next_position_y += offset_y
-        # bump up the offset in the y direction
+            # bump up the offset in the y direction
+            start_position_y = next_position_y
+            next_position_y = next_position_y + offset_y
+        # bump up the offset in the x direction
         next_position_x += offset_x
     print "\n\n\n\nThis is a test", crime_array
-    print "This is test_query", test_query
+
+    # test_query = Crime_Data_NYC.query.filter(and_(
+    #     and_(
+    #         Crime_Data_NYC.longitude >= next_position_x,
+    #         Crime_Data_NYC.longitude < next_position_x + offset_x),
+    #     and_(
+    #         Crime_Data_NYC.latitude > next_position_y + offset_y,
+    #         Crime_Data_NYC.latitude <= next_position_y)
+    #     )
+    #     ).order_by(Crime_Data_NYC.longitude.desc()).limit(20).all()
+
+    # print "========================================================="
+    # print "next_position_x", next_position_x, "next_p_offset_x", next_position_x + offset_x
+    # for test in test_query:
+    #     print test.crime_id, test.latitude, test.longitude
+    # print "========================================================="
 
 
 def generate_bounds(user_coords):
