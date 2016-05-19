@@ -15,3 +15,8 @@ What I need to do for the May 18th is to create a 2d array grid based on the lat
 
 #May 18th Log:
 I don't know why but my brain went for a second lunch later today and I forgot how to implement a 2d array and had to noodle around in my python terminal. Oh the simple things in life.
+
+So far as of 5pm I managed to create the 2d array to hold in what the latitude and longitude limit values are for each grid...?
+Anyway, the next step is to input the number of crimes that are in that grid segment.
+I notice when I do my query where I try to do something like
+SELECT * FROM crime_data_nyc WHERE latitude BETWEEN <value> AND <value> AND longitude BETWEEN <value> AND <value> I am highly likely to return nothing for all of my entries. So I need to think through this part better... If I exclude the second BETWEEN ... AND I get way too many results (iirc via psql) to the magnitude of 2k+ results. Paused for a bit, I guess I need to do things bird by bird.
