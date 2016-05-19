@@ -179,6 +179,7 @@ function generateBounds() {
         // var small_latlng_bounds = new google.maps.LatLngBounds(
         //                            new google.maps.LatLng(40.765385, -73.9966736),
         //                            new google.maps.LatLng(40.7489472, -73.9611953));
+
         console.log("This is NORTHEASTINNER", NORTHEASTINNER);
         var small_latlng_bounds = new google.maps.LatLngBounds(
                                    new google.maps.LatLng(NORTHEASTINNER),
@@ -193,16 +194,13 @@ function generateBounds() {
                               map: map,
                               bounds: small_latlng_bounds
                             });
-
-
 }
 
 function calculateAndDisplayRoute() {
 
       // try doing this: 40.673301, -73.780351
       // create two points: A and B
-      console.log("Wut?");
-      console.log(START);
+      console.log("Start Point", START);
       var latLangStart = new google.maps.LatLng(START.lat, START.lng);
       var latLangEnd = new google.maps.LatLng(END.lat, END.lng);
 
