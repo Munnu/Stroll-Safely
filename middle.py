@@ -62,6 +62,7 @@ def generate_crime_grid(user_coords):
         generates the crime (relative location) crime grid """
 
     crime_array = []  # initalize an empty (2d) array
+    crime_totals = []  # this holds the total number of crimes found in each grid
 
     chunk_number = 4  # just an arbitrary number to break up grid
 
@@ -127,7 +128,8 @@ def generate_crime_grid(user_coords):
             # get the next_position_y and next_position_x and insert it into 2d array
             # crime_array.append([start_position_y, start_position_x])
             # what do I need? I want to render the crimes in
-            crime_array.append([square_data, len(crimes_in_grid)])
+            crime_array.append([square_data])
+            crime_totals.append(len(crimes_in_grid))
 
             # bump up the offset in the y direction
             start_position_y = next_position_y
@@ -135,42 +137,25 @@ def generate_crime_grid(user_coords):
         # bump up the offset in the x direction
         next_position_x += offset_x
 
-    crime_array = calculate_crime_index(crime_array)
+    # sorry, a little janky since I'm using two lists to do this part
+    crime_array = calculate_crime_index(crime_array, crime_totals)
 
 
-def calculate_crime_index(crime_array):
-    """ Calculates the crime index based on the bounds of the route """
+def calculate_crime_index(crime_array, crime_totals):
+    """ Calculates the crime index based on the bounds of the route and appends
+        those crime indices to the list of crimes in that route bound """
 
     # get the maximum crime_total that is present in the array, that's the number
     # that all of the values will be normalized against
-    normalizer = max(crime_array)[1]
+    normalizer = max(crime_totals)
 
     # now loop through the the actual crime_array and append the crime_index
     # based on the normalizer value
-    for crime in crime_array:
-        crime_index = crime[1] / normalizer
+    for i in range(len(crime_totals)):
+        crime_index = float(crime_totals[i]) / normalizer
+        crime_array[i].append(crime_index)
 
-        print "This is crime_index", crime_index
-        crime.append(crime_index)
-
-    print "This is crime_array", crime_array
     return crime_array
-
-    # test_query = Crime_Data_NYC.query.filter(and_(
-    #     and_(
-    #         Crime_Data_NYC.longitude >= next_position_x,
-    #         Crime_Data_NYC.longitude < next_position_x + offset_x),
-    #     and_(
-    #         Crime_Data_NYC.latitude > next_position_y + offset_y,
-    #         Crime_Data_NYC.latitude <= next_position_y)
-    #     )
-    #     ).order_by(Crime_Data_NYC.longitude.desc()).limit(20).all()
-
-    # print "========================================================="
-    # print "next_position_x", next_position_x, "next_p_offset_x", next_position_x + offset_x
-    # for test in test_query:
-    #     print test.crime_id, test.latitude, test.longitude
-    # print "========================================================="
 
 
 def generate_bounds(user_coords):
