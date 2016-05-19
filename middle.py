@@ -4,9 +4,10 @@
 # It dynamically generates the bounds based on the user's start and end location
 # Gets the crime records
 # ------------------------------------------------------------------------------
-
 import json, requests
 from model import Crime_Data_NYC, connect_to_db, db, init_app
+from flask_sqlalchemy import SQLAlchemy
+from sqlalchemy import and_, or_
 #from application import app
 from gmaps import Directions, Geocoding
 
@@ -93,11 +94,27 @@ def generate_crime_grid(user_coords):
 
             # get the next_position_y and next_position_x and insert it into 2d array
             crime_array.append([next_position_y, next_position_x])
+
+            # playing around with sql queries
+            test_query = Crime_Data_NYC.query.filter(
+                and_(
+                    and_(Crime_Data_NYC.longitude >= next_position_x,
+                    Crime_Data_NYC.longitude < next_position_x + offset_x),
+                    and_(Crime_Data_NYC.latitude >= next_position_y,
+                        Crime_Data_NYC.latitude < next_position_y + offset_y)
+                    )
+                ).limit(20).all()
+
+            print "====================================="
+            print test_query
+            print "====================================="
+            
             # bump up the offset in the x direction
             next_position_y += offset_y
         # bump up the offset in the y direction
         next_position_x += offset_x
     print "\n\n\n\nThis is a test", crime_array
+    print "This is test_query", test_query
 
 
 def generate_bounds(user_coords):
