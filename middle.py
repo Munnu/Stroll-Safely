@@ -18,9 +18,9 @@ geocoding = Geocoding(sensor=False)
 
 # start and end coordinates in directions
 # reminder: results returns a list
-results = api.directions((40.728783, -73.7897503),
-                         (40.6497484, -73.97767999999999))
-# pretty formatting on json, it's great
+# results = api.directions((40.728783, -73.7897503),
+#                          (40.6497484, -73.97767999999999))
+# # pretty formatting on json, it's great
 # print json.dumps(results, indent=2)
 
 
@@ -84,12 +84,12 @@ def generate_crime_grid(user_coords):
     next_position_y = user_coords['top_left_inner_bound']['lat'] + offset_y
 
     # print statements city
-    print "------------------------------------------------------------------"
-    print "This is user_coords", user_coords
-    print "This is offset_x, offset_y", offset_x, offset_y
-    print "This is start_position", start_position_x, start_position_y
-    print "This is next_position_x, next_position_y", next_position_x, next_position_y
-    print "------------------------------------------------------------------"
+    # print "------------------------------------------------------------------"
+    # print "This is user_coords", user_coords
+    # print "This is offset_x, offset_y", offset_x, offset_y
+    # print "This is start_position", start_position_x, start_position_y
+    # print "This is next_position_x, next_position_y", next_position_x, next_position_y
+    # print "------------------------------------------------------------------"
 
     for i in range(chunk_number):
         # outer for loop, we will do looping column-wise [x] second
@@ -104,8 +104,8 @@ def generate_crime_grid(user_coords):
                         Crime_Data_NYC.latitude <= start_position_y)
                     )
                 ).all()
-            print "Grid Lat: %s \tGrid Lng: %s \tNumber of Crimes: %s" % \
-                (start_position_y, start_position_x, len(crimes_in_grid))
+            # print "Grid Lat: %s \tGrid Lng: %s \tNumber of Crimes: %s" % \
+            #     (start_position_y, start_position_x, len(crimes_in_grid))
 
             # holds the data unique to that individual tile on the bounds grid
             square_data = {
@@ -157,7 +157,7 @@ def generate_bounds(user_coords):
     """ draws the bounds for safety analysis around what will be the
         user defined route (a padded rectangle) """
 
-    print "this is user_coords from generate_bounds", user_coords
+    # print "this is user_coords from generate_bounds", user_coords
 
     # takes in user_coords point a and point b
     # in order to determine top left and bottom right coordinates.
@@ -185,7 +185,7 @@ def get_twenty():
 
     crimes_coords = {'crimes': []}
 
-    print "\n\n\nAAAAAAAAAAAAAAAAAA!!!!!", twenty_entries[0], "\n\n\n\n\n"
+    # print "\n\n\nAAAAAAAAAAAAAAAAAA!!!!!", twenty_entries[0], "\n\n\n\n\n"
     for entry in twenty_entries:
         # get the location in string format of "(0, 0)"
         # and other nasty string to float conversion stuff here

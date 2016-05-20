@@ -38,6 +38,16 @@ def parse_user_start_end():
     return jsonify(lat_lng_dict)
 
 
+@app.route('/directions-data.json', methods=['POST'])
+def directionsData():
+    """ This holds all of the leg information pertaining to the route
+        and all of this other fancy stuff """
+
+    directions_data = request.get_json()
+    print "This is directions_data", directions_data
+
+    return directions_data
+
 @app.route('/crimes.json')
 def crimes():
     """ return a json of crimes lat, longitude """
