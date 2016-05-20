@@ -20,6 +20,3 @@ So far as of 5pm I managed to create the 2d array to hold in what the latitude a
 Anyway, the next step is to input the number of crimes that are in that grid segment.
 I notice when I do my query where I try to do something like
 SELECT * FROM crime_data_nyc WHERE latitude BETWEEN <value> AND <value> AND longitude BETWEEN <value> AND <value> I am highly likely to return nothing for all of my entries. So I need to think through this part better... If I exclude the second BETWEEN ... AND I get way too many results (iirc via psql) to the magnitude of 2k+ results. Paused for a bit, I guess I need to do things bird by bird.
-
-#May 19th Log:
-I didn't do a thing today. We had a fieldtrip and 2 hours to do our work... I also had advising. Didn't do a thing, nope. I know tomorrow will be even more limited time, so I might try again tonight.
