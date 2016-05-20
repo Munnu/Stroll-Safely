@@ -43,6 +43,20 @@ var getUserData = function(results) {
 
 };
 
+var sendDirectionsResult = function(returnedDirectionsData) {
+    // this function gets the directionsResults' response (an object {})
+    // which is returned by the callback function of directionsService. 
+    // This will go to a python flask route because we need it in order 
+    // to analyze the legs of the trip.
+
+    // assemble a url (this will be our flask route), so exciting...
+    var url = '/directions-data.json';
+    returnedDirectionsData = JSON.stringify(returnedDirectionsData);
+
+    // this next step is to pass the values into the flask json endpoint
+    $.post(url, returnedDirectionsData);
+};
+
 var startDirections =  function(event){
     event.preventDefault(); // need this to prevent GET on form submit refresh
 
@@ -205,6 +219,7 @@ function calculateAndDisplayRoute() {
       var latLangEnd = new google.maps.LatLng(END.lat, END.lng);
 
       var selectedMode = "WALKING";
+      var directionsData;
 
       directionsService.route({
           origin: latLangStart,  // Point A
@@ -212,12 +227,22 @@ function calculateAndDisplayRoute() {
           // Note that Javascript allows us to access the constant
           // using square brackets and a string value as its
           // "property."
-          travelMode: google.maps.TravelMode[selectedMode] // walking only
+          travelMode: google.maps.TravelMode[selectedMode], // walking only
+          waypoints: [] // this is for later, I will need to pass in waypoints that python gives me
       }, function(response, status) {
         if (status == google.maps.DirectionsStatus.OK) {
             directionsDisplay.setDirections(response);
+            // need to find a way to return to python this same exact response's 
+            // route's array, something like: directions_data = response['routes']
+            // so that I know the legs to my trip and can check which grids
+            // does a leg pass through.
+            // let's do the process of sending this data over to python, call it
+            sendDirectionsResult(response['routes'][0]);
         } else {
             window.alert('Directions request failed due to ' + status);
         }
     });
+
+      console.log("This is directionsData (directionsService and directionsResult)",
+                  directionsData);
 }
