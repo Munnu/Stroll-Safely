@@ -47,7 +47,8 @@ def address_to_lat_lng(user_points):
     # first we need to find out which corners are our top left and bottom right
     # call generate_bounds, this does the trick
     inner_boundary_coords = generate_bounds(user_coords)  # returns a tuple
-    print "\n\n\n\n THIS IS INNER_BOUNDARY_COORDS", inner_boundary_coords
+
+    # extract the top left and bottom right corners from function call above
     user_coords['top_left_inner_bound'] = inner_boundary_coords[0]
     user_coords['bottom_right_inner_bound'] = inner_boundary_coords[1]
 
@@ -59,7 +60,7 @@ def address_to_lat_lng(user_points):
 
 def generate_crime_grid(user_coords):
     """ This takes the bounds based on the user's route and
-        generates the crime (relative location) crime grid """
+        obtains the crime (relative location) from each crime grid """
 
     crime_array = []  # initalize an empty (2d) array
     crime_totals = []  # this holds the total number of crimes found in each grid
@@ -90,17 +91,6 @@ def generate_crime_grid(user_coords):
     print "This is next_position_x, next_position_y", next_position_x, next_position_y
     print "------------------------------------------------------------------"
 
-    # test_query = Crime_Data_NYC.query.filter(and_(
-    #         and_(
-    #             Crime_Data_NYC.longitude >= start_position_x,
-    #             Crime_Data_NYC.longitude < next_position_x),
-    #         and_(
-    #             Crime_Data_NYC.latitude > next_position_y,
-    #             Crime_Data_NYC.latitude <= start_position_y)
-    #         )
-    #     ).order_by(Crime_Data_NYC.longitude.desc()).all()
-    # print "Test query:"
-    # print len(test_query)
     for i in range(chunk_number):
         # outer for loop, we will do looping column-wise [x] second
         for j in range(chunk_number):
@@ -138,7 +128,12 @@ def generate_crime_grid(user_coords):
         next_position_x += offset_x
 
     # sorry, a little janky since I'm using two lists to do this part
+    # the first list holds the crime data info (lat lng)
+    # second holds the total number of crimes per list element
     crime_array = calculate_crime_index(crime_array, crime_totals)
+
+    # return the now fully assembled crime_array
+    return crime_array
 
 
 def calculate_crime_index(crime_array, crime_totals):
@@ -160,7 +155,7 @@ def calculate_crime_index(crime_array, crime_totals):
 
 def generate_bounds(user_coords):
     """ draws the bounds for safety analysis around what will be the
-        user defined route """
+        user defined route (a padded rectangle) """
 
     print "this is user_coords from generate_bounds", user_coords
 
