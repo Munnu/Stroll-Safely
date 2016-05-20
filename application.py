@@ -7,30 +7,6 @@ from middle import get_twenty, address_to_lat_lng
 
 app = Flask(__name__)
 
-# trying out a ragtag thing
-user_lat_lng = ''
-
-# at somep point our routes will be .jsons
-
-mfields = {'type': fields.Raw,
-            'features': fields.Raw}
-
-
-@marshal_with(mfields)
-def construct():
-    constructed_json = {'type': 'FeatureCollection',
-                        'features': [{
-                            'type': 'Feature',
-                            'geometry': {
-                                'type': 'Point',
-                                'coordinates': [40.7282239, -73.79485160000002]
-                                },
-                                'properties': {
-                                    'prop0': 'value0'
-                                }
-                        }]}
-    return constructed_json
-
 
 @app.route('/')
 def index():

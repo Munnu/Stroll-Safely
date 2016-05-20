@@ -1,5 +1,5 @@
  LOAD CSV  
-      FROM './NYPD_7_Major_Felony_Incident_Map.csv' (
+      FROM './unit_test_crime_data.csv' (
                   OBJECTID,Identifier,Occurrence_Date,Day_of_Week,
                   Occurrence_Month,
                   Occurrence_Day,
@@ -18,7 +18,7 @@
                   YCoordinate,
                   Location
                 )
-      INTO postgresql:///crime_data?crime_data_nyc (
+      INTO postgresql:///test_data?crime_data_nyc (
                   Occurrence_Date,Day_of_Week,
                   Occurrence_Month,Occurrence_Day,Occurrence_Year,
                   Occurrence_Hour,CompStat_Month,CompStat_Day,
@@ -58,7 +58,6 @@
             Jurisdiction text,
             XCoordinate integer,
             YCoordinate integer,
-            --Location geometry(point),
             Location text,
             Latitude Decimal,
             Longitude Decimal
