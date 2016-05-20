@@ -23,3 +23,8 @@ SELECT * FROM crime_data_nyc WHERE latitude BETWEEN <value> AND <value> AND long
 
 #May 19th Log:
 I didn't do a thing today. We had a fieldtrip and 2 hours to do our work... I also had advising. Didn't do a thing, nope. I know tomorrow will be even more limited time, so I might try again tonight.
+
+#May 20th Log:
+I thought I'd be done with my minimum viable product but I am not and that's mainly because there has been fieldtrips and very little time to work on it. I am also stuck on getting a JS object sent over to flask so that I could manipulate that data in python.
+
+Today I learned about `git cherry-pick` because I accidentally pushed a commit to my master branch that had broken code. I'll try to do my work tonight and hope I will reach my MVP by Monday. My mentor had told me to redo my entire thing, which also made me spin my wheels until late in the night last night. It wasn't until in the morning I realized that's not a good idea until I get the main idea down: A safest possible route generated (even if it takes 5 minutes to load it). Tonight since it is highly likely I won't be able to solve the JS to Python thing, I will use the gmaps module in python to get the directions (which is the same exact data I'm retrieving from the JS end) and see if I could find what legs of the route overlaps what block(s) of the boundary.
