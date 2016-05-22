@@ -1,6 +1,6 @@
 from flask import Flask, render_template, url_for, jsonify, request
 from flask_restful import marshal_with, fields
-from model import Crime_Data_NYC, connect_to_db
+from model import Crime_Data_NYC, NYC_Crimes_by_Geohash, connect_to_db
 #from model import init_app
 
 from middle import get_twenty, address_to_lat_lng

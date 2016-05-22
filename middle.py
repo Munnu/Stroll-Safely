@@ -5,7 +5,8 @@
 # Gets the crime records
 # ------------------------------------------------------------------------------
 import json, requests
-from model import Crime_Data_NYC, connect_to_db, db, init_app
+from model import Crime_Data_NYC, NYC_Crimes_by_Geohash
+from model import connect_to_db, db, init_app
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import and_, or_
 #from application import app
@@ -189,9 +190,8 @@ def get_twenty():
     for entry in twenty_entries:
         # get the location in string format of "(0, 0)"
         # and other nasty string to float conversion stuff here
-        location = entry.location[1:-1].split(",")
-        location_lat = float(location[0].strip())
-        location_lng = float(location[1].strip())
+        location_lat = entry.latitude
+        location_lng = entry.longitude
 
         format_loc_dict = {'latitude': location_lat, 'longitude': location_lng}
 
