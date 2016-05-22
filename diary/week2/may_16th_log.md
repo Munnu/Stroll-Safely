@@ -83,6 +83,18 @@ DESC LIMIT 5;
         1464 | hfv58jz
         1400 | hfug5m4
 ```
+A better table that shows the boroughs:
+
+```
+    borough    | crime_count | geohash 
+---------------+-------------+---------
+ MANHATTAN     |        3344 | hfugp69
+ QUEENS        |        3123 | hfuum9q
+ BRONX         |        1523 | hfv59yx
+ BROOKLYN      |        1400 | hfug5m4
+ BRONX         |        1271 | hfv58jz
+ ```
+ 
 The crime_count totals up all of the crimes in that one geohash. The geohash column is self-explanatory, it holds the grid on planet earth (associated with NYC) that has the most frequent crimes based on the data.
 That being said, geohash `hfugp69`'s crime count of `3344` is what I should normalize everything against.
 

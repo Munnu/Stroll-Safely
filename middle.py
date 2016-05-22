@@ -53,6 +53,49 @@ def address_to_lat_lng(user_points):
     user_coords['top_left_inner_bound'] = inner_boundary_coords[0]
     user_coords['bottom_right_inner_bound'] = inner_boundary_coords[1]
 
+    # since I can't get javascript to load, here's a hacky way of loading json
+    # that details the route based on the user's point A and point B
+    results = api.directions(
+                            (user_coords['point_a']['lat'], 
+                            user_coords['point_a']['lng']),
+                            (user_coords['point_b']['lat'], 
+                            user_coords['point_b']['lng']),
+                            mode="walking"
+                            )
+
+    # print "==========================================="
+    # print json.dumps(results[0]['legs'], indent=2)
+    # print "==========================================="
+
+    # a test to see if I could get the latlng of the first step's start pos
+    # and get the geohash and crime_index from the database
+    first_step_start_loc = results[0]['legs'][0]['steps'][0]['start_location']
+    print json.dumps(first_step_start_loc, indent=2)
+
+    # some raw sql to do the geohash conversion
+    geohash_sql = "SELECT * " + \
+                  "FROM nyc_crimes_by_geohash " + \
+                  "WHERE geohash=" + \
+                  "ST_GeoHash(st_makepoint(%s, %s), 7);" % \
+                  (first_step_start_loc['lat'], first_step_start_loc['lng'])
+
+    # execute the raw sql
+    geohash_query =db.engine.execute(geohash_sql)
+
+    # there should be only one result, so
+    geohashes_found = ()
+    for row in geohash_query:
+        geohashes_found = row[1:]
+
+    # TODO: Write something that checks queries based on the crime_count desc
+    # find the 5th item in that query and say that any geohash with a crime
+    # index greater than or equal to the 5th item is considered dangerous
+
+    print "************************************"
+    print geohashes_found  # format is (geohash, total_crimes, crime_index)
+    print type(geohashes_found[-1])  # is of decimal.decimal type, that's okay
+    print "************************************"
+
     # Let's see how generate_crime_grid loads
     generate_crime_grid(user_coords)
 
