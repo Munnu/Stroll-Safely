@@ -28,3 +28,126 @@ I didn't do a thing today. We had a fieldtrip and 2 hours to do our work... I al
 I thought I'd be done with my minimum viable product but I am not and that's mainly because there has been fieldtrips and very little time to work on it. I am also stuck on getting a JS object sent over to flask so that I could manipulate that data in python.
 
 Today I learned about `git cherry-pick` because I accidentally pushed a commit to my master branch that had broken code. I'll try to do my work tonight and hope I will reach my MVP by Monday. My mentor had told me to redo my entire thing, which also made me spin my wheels until late in the night last night. It wasn't until in the morning I realized that's not a good idea until I get the main idea down: A safest possible route generated (even if it takes 5 minutes to load it). Tonight since it is highly likely I won't be able to solve the JS to Python thing, I will use the gmaps module in python to get the directions (which is the same exact data I'm retrieving from the JS end) and see if I could find what legs of the route overlaps what block(s) of the boundary.
+
+#May 21st Log:
+I spoke to a friend and I may be back on track. I'm attempting to use PostGIS now because it may seem easier and I won't be in the woods. I got help as to how I shouldn't worry about the best way but a way that works. I made a macro in VIM to alter my 1.1mil entries csv to ensure that my latitude and longitude are a geometry(point()) type and also forced in the latitude and longitude columns (type decimal).
+
+I didn't know what type geohashes are, so today I learned about `pg_typeof()` from postgres documentation. It is the same as use typeof() in JavaScript or type() in python when you want to know the type of something. I thought this was great to share. It can be used like this: 
+
+`SELECT pg_typeof("stu_id"), pg_typeof(100) from student_details limit 1;`
+
+I also learned about this to convert my geometry(point((lat,lng))) into geohashes and insert them into my geohash column:
+
+`UPDATE crime_data_nyc
+SET geohash=(ST_GeoHash(location, 7));`
+
+I also created an extra table that holds in all of the geohashes and the total number of crimes associated with that geohash.
+
+```
+CREATE TABLE nyc_crimes_by_geohash (
+	id SERIAL PRIMARY KEY NOT NULL,
+	geohash TEXT,
+	total_crimes INTEGER,
+	crime_index DECIMAL
+);
+```
+
+Then did to load the database with all of the geohashes based on the crime locations
+
+```
+INSERT INTO nyc_crimes_by_geohash (geohash) 
+SELECT distinct(geohash)
+FROM crime_data_nyc;
+```
+Or as a better alternative:
+
+```
+INSERT INTO nyc_crimes_by_geohash (geohash, total_crimes) 
+SELECT distinct(geohash), count(crime_id)
+FROM crime_data_nyc GROUP BY geohash;
+```
+
+To get the top 5 geohashes with the highest number of crimes in all of nyc:
+
+```
+SELECT COUNT(crime_id) AS crime_count, geohash
+FROM crime_data_nyc
+GROUP BY geohash
+ORDER BY crime_count
+DESC LIMIT 5;
+ crime_count | geohash 
+-------------+---------
+        3344 | hfugp69
+        3123 | hfuum9q
+        1523 | hfv59yx
+        1464 | hfv58jz
+        1400 | hfug5m4
+```
+The crime_count totals up all of the crimes in that one geohash. The geohash column is self-explanatory, it holds the grid on planet earth (associated with NYC) that has the most frequent crimes based on the data.
+That being said, geohash `hfugp69`'s crime count of `3344` is what I should normalize everything against.
+
+Then I found a great resource on visualizing sql joins [Coding horror visual explanation of SQL Joins](https://blog.codinghorror.com/a-visual-explanation-of-sql-joins/) and a [good link that reviews the database relationships](http://docs.sqlalchemy.org/en/latest/orm/basic_relationships.html)
+
+```
+SELECT nyc_crimes_by_geohash.id, nyc_crimes_by_geohash.geohash FROM nyc_crimes_by_geohash
+INNER JOIN crime_data_nyc
+ON nyc_crimes_by_geohash.geohash = crime_data_nyc.geohash;
+```
+
+My next attempt is to insert the total number of crimes by geohash into the nyc_crimes_by_geohash table... This was my attempt and right now I assume it is working:
+
+```
+INSERT INTO nyc_crimes_by_geohash (geohash) (
+	SELECT count(crime_id)                        
+	FROM crime_data_nyc
+	CROSS JOIN nyc_crimes_by_geohash
+	WHERE nyc_crimes_by_geohash.geohash = 
+	crime_data_nyc.geohash
+	GROUP BY crime_data_nyc.geohash
+);
+```
+
+And that doesn't work, let's break it down and this works:
+
+```
+SELECT count(crime_id)                        
+FROM crime_data_nyc
+CROSS JOIN nyc_crimes_by_geohash
+WHERE nyc_crimes_by_geohash.geohash = 
+crime_data_nyc.geohash
+GROUP BY crime_data_nyc.geohash
+ORDER BY count(crime_id) DESC;
+```
+
+And to verify that it works, I added the geohash columns from both tables into the query:
+
+```
+SELECT crime_data_nyc.geohash, nyc_crimes_by_geohash.geohash, count(crime_id)                        
+FROM crime_data_nyc
+CROSS JOIN nyc_crimes_by_geohash
+WHERE nyc_crimes_by_geohash.geohash = 
+crime_data_nyc.geohash
+GROUP BY crime_data_nyc.geohash, nyc_crimes_by_geohash.geohash
+ORDER BY count(crime_id) DESC;
+```
+
+I figured out how to get this to work with an insert statement.
+
+`select (2)::decimal/total_crimes from nyc_crimes_by_geohash where id=18379;`
+
+To insert into the total_crimes column the normalizer value, this is hard-coded:
+
+```
+UPDATE nyc_crimes_by_geohash
+SET crime_index=(total_crimes)::decimal/(3344);
+```
+
+Then add a unique constraint to the geohash:
+
+`ALTER TABLE nyc_crimes_by_geohash ADD CONSTRAINT geohash_constraint UNIQUE (geohash);`
+
+Add a fkey relationship constraint to crime_data_nyc
+
+`
+ALTER TABLE crime_data_nyc ADD CONSTRAINT geohash_fkey FOREIGN KEY (geohash) REFERENCES nyc_crimes_by_geohash (geohash);
+`
