@@ -1,0 +1,53 @@
+ LOAD CSV  
+      FROM './test_file.csv' (
+                  OBJECTID,Identifier,Occurrence_Date,Day_of_Week,
+                  Occurrence_Month,Occurrence_Day,Occurrence_Year,
+                  Occurrence_Hour,CompStat_Month,CompStat_Day,
+                  CompStat_Year,Offense,Offense_Classification,
+                  Sector,Precinct,Borough,Jurisdiction,XCoordinate,
+                  YCoordinate,Location
+                )
+      INTO postgresql:///project_test?my_project (
+                  Occurrence_Date,Day_of_Week,
+                  Occurrence_Month,Occurrence_Day,Occurrence_Year,
+                  Occurrence_Hour,CompStat_Month,CompStat_Day,
+                  CompStat_Year,Offense,Offense_Classification,
+                  Sector,Precinct,Borough,Jurisdiction,XCoordinate,
+                  YCoordinate,Location
+                )
+ 
+      WITH truncate,  
+           skip header = 1,  
+           fields optionally enclosed by '"',  
+           fields escaped by double-quote,  
+           fields terminated by ','  
+ 
+       SET client_encoding to 'latin1',  
+           work_mem to '12MB',  
+           standard_conforming_strings to 'on'  
+ 
+    BEFORE LOAD DO  
+     $$ drop table if exists my_project; $$,  
+     $$ create sequence crime_data_nyc_seq; $$,
+     $$ create table my_project (  
+            Crime_ID serial primary key,
+            Occurrence_Date timestamp,
+            Day_of_Week text,
+            Occurrence_Month text,
+            Occurrence_Day integer,
+            Occurrence_Year integer,
+            Occurrence_Hour integer,
+            CompStat_Month integer,
+            CompStat_Day integer,
+            CompStat_Year integer,
+            Offense text,
+            Offense_Classification text,
+            Sector text,
+            Precinct integer,
+            Borough text,
+            Jurisdiction text,
+            XCoordinate integer,
+            YCoordinate integer,
+            Location point 
+        );  
+   $$; 
