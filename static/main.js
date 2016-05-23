@@ -39,8 +39,13 @@ var getUserData = function(results) {
 
     // now that we have the start coords, load up calculateAndDisplayRoute
     calculateAndDisplayRoute();
-    generateBounds(); // and generate the small bounding box
+    generateBounds(); // !!! Had to re-add this
 
+};
+
+var showOptimalRoute = function(response) {
+    alert("Now the route will update");
+    debugger;
 };
 
 var sendDirectionsResult = function(returnedDirectionsData) {
@@ -54,11 +59,12 @@ var sendDirectionsResult = function(returnedDirectionsData) {
     returnedDirectionsData = JSON.stringify(returnedDirectionsData);
 
     // this next step is to pass the values into the flask json endpoint
-    $.post(url, returnedDirectionsData);
+    $.post(url, returnedDirectionsData, showOptimalRoute);
 };
 
 var startDirections =  function(event){
     event.preventDefault(); // need this to prevent GET on form submit refresh
+    alert("Inside of startDirections");
 
     // get the text field values inputted by the user
     start = document.getElementById('start-point').value;
@@ -69,6 +75,9 @@ var startDirections =  function(event){
     $.get(url, getUserData); // pass the values into the flask json endpoint
 
  };
+
+$('#route-me').submit(startDirections);
+console.log("HEY");
 
 function initMap() {
 
@@ -101,29 +110,7 @@ function initMap() {
             zoom: 12
         });
 
-        var bottom_right_big = new google.maps.Marker({ // 40.474839, -73.447959
-                          position: {lat: 40.474839, lng: -73.447959},
-                          map: map,
-                          title: 'Extreme outer bounds bottom right'
-                        });
-        var top_left_big = new google.maps.Marker({ // 40.937264, -74.288455
-                          position: {lat: 40.937264, lng: -74.288455},
-                          map: map,
-                          title: 'Extreme outer bounds top left'
-                        });
-        var large_latlng_bounds = new google.maps.LatLngBounds(
-                                    new google.maps.LatLng(40.937264, -74.288455),
-                                    new google.maps.LatLng(40.474839, -73.447959));
-        
-        var outer_rectangle = new google.maps.Rectangle({
-                              strokeColor: '#ffff00',
-                              strokeOpacity: 0.4,
-                              strokeWeight: 2,
-                              fillColor: '#ffff00',
-                              fillOpacity: 0.2,
-                              map: map,
-                              bounds: large_latlng_bounds
-                            });
+
 
         // results is whatever is returned from the GET request, 
         // JSON in this case
@@ -209,6 +196,7 @@ function generateBounds() {
                               bounds: small_latlng_bounds
                             });
 }
+
 
 function calculateAndDisplayRoute() {
 
