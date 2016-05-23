@@ -29,6 +29,44 @@ var getUserData = function(results) {
     calculateAndDisplayRoute();
 };
 
+function calculateAndDisplayRoute() {
+
+      // try doing this: 40.673301, -73.780351
+      // create two points: A and B
+      console.log("Start Point", START);
+      var latLangStart = new google.maps.LatLng(START.lat, START.lng);
+      var latLangEnd = new google.maps.LatLng(END.lat, END.lng);
+
+      var selectedMode = "WALKING";
+      var directionsData;
+
+      directionsService.route({
+          origin: latLangStart,  // Point A
+          destination: latLangEnd,  // Point B
+          // Note that Javascript allows us to access the constant
+          // using square brackets and a string value as its
+          // "property."
+          travelMode: google.maps.TravelMode[selectedMode], // walking only
+          waypoints: [] // this is for later, I will need to pass in waypoints that python gives me
+      }, function(response, status) {
+        if (status == google.maps.DirectionsStatus.OK) {
+            directionsDisplay.setDirections(response);
+            // need to find a way to return to python this same exact response's 
+            // route's array, something like: directions_data = response['routes']
+            // so that I know the legs to my trip and can check which grids
+            // does a leg pass through.
+            // let's do the process of sending this data over to python, call it
+            sendDirectionsResult(response['routes'][0]);
+        } else {
+            window.alert('Directions request failed due to ' + status);
+        }
+    });
+
+      console.log("This is directionsData (directionsService and directionsResult)",
+                  directionsData);
+}
+
+
 var showOptimalRoute = function(response) {
     console.log("showOptimalRoute response: ", response);
     //debugger;
@@ -128,41 +166,3 @@ function initMap() {
 
 // display the map
 google.maps.event.addDomListener(window, 'load', initMap);
-
-
-function calculateAndDisplayRoute() {
-
-      // try doing this: 40.673301, -73.780351
-      // create two points: A and B
-      console.log("Start Point", START);
-      var latLangStart = new google.maps.LatLng(START.lat, START.lng);
-      var latLangEnd = new google.maps.LatLng(END.lat, END.lng);
-
-      var selectedMode = "WALKING";
-      var directionsData;
-
-      directionsService.route({
-          origin: latLangStart,  // Point A
-          destination: latLangEnd,  // Point B
-          // Note that Javascript allows us to access the constant
-          // using square brackets and a string value as its
-          // "property."
-          travelMode: google.maps.TravelMode[selectedMode], // walking only
-          waypoints: [] // this is for later, I will need to pass in waypoints that python gives me
-      }, function(response, status) {
-        if (status == google.maps.DirectionsStatus.OK) {
-            directionsDisplay.setDirections(response);
-            // need to find a way to return to python this same exact response's 
-            // route's array, something like: directions_data = response['routes']
-            // so that I know the legs to my trip and can check which grids
-            // does a leg pass through.
-            // let's do the process of sending this data over to python, call it
-            sendDirectionsResult(response['routes'][0]);
-        } else {
-            window.alert('Directions request failed due to ' + status);
-        }
-    });
-
-      console.log("This is directionsData (directionsService and directionsResult)",
-                  directionsData);
-}
