@@ -53,6 +53,7 @@ def address_to_lat_lng(user_points):
     user_coords['top_left_inner_bound'] = inner_boundary_coords[0]
     user_coords['bottom_right_inner_bound'] = inner_boundary_coords[1]
 
+    # $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
     # since I can't get javascript to load, here's a hacky way of loading json
     # that details the route based on the user's point A and point B
     results = api.directions(
@@ -95,8 +96,9 @@ def address_to_lat_lng(user_points):
     print geohashes_found  # format is (geohash, total_crimes, crime_index)
     print type(geohashes_found[-1])  # is of decimal.decimal type, that's okay
     print "************************************"
+    # $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 
-    # Let's see how generate_crime_grid loads
+    # # Let's see how generate_crime_grid loads
     generate_crime_grid(user_coords)
 
     return user_coords
