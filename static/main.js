@@ -5,8 +5,6 @@ var directionsService;
 var START = {};
 var END = {};
 
-var NORTHEASTINNER = {};
-var SOUTHWESTINNER = {};
 
 var getUserData = function(results) {
     // retreive the assembled lat/lng from the flask JSON route
@@ -22,16 +20,6 @@ var getUserData = function(results) {
     console.log("This is inside of getUserData START" + START.lat + " " + START.lng);
     console.log("This is inside of getUserData END" + END.lat + " " + END.lng);
 
-    // get the inner bounds too
-    NORTHEASTINNER.lat = results.top_left_inner_bound.lat;
-    NORTHEASTINNER.lng = results.top_left_inner_bound.lng;
-
-    console.log("Testing NORTHEASTINNER", NORTHEASTINNER);
-
-    SOUTHWESTINNER.lat = results.bottom_right_inner_bound.lat;
-    SOUTHWESTINNER.lng = results.bottom_right_inner_bound.lng;
-
-
     // display the user data that was submitted and returned back from flask
     // $('#get-user-data').html(results.point_a.lat + " " + results.point_a.lng);
     $('#parse-user-data').html("start: " + START.lat + " " + START.lng +
@@ -39,13 +27,11 @@ var getUserData = function(results) {
 
     // now that we have the start coords, load up calculateAndDisplayRoute
     calculateAndDisplayRoute();
-    generateBounds(); // !!! Had to re-add this
-
 };
 
 var showOptimalRoute = function(response) {
-    alert("Now the route will update");
-    debugger;
+    console.log("showOptimalRoute response: ", response);
+    //debugger;
 };
 
 var sendDirectionsResult = function(returnedDirectionsData) {
@@ -59,7 +45,7 @@ var sendDirectionsResult = function(returnedDirectionsData) {
     returnedDirectionsData = JSON.stringify(returnedDirectionsData);
 
     // this next step is to pass the values into the flask json endpoint
-    $.post(url, returnedDirectionsData, showOptimalRoute);
+    $.post(url, returnedDirectionsData, showOptimalRoute); // success function is needed
 };
 
 var startDirections =  function(event){
@@ -76,8 +62,9 @@ var startDirections =  function(event){
 
  };
 
+// -- Needed for the onSubmit behavior
 $('#route-me').submit(startDirections);
-console.log("HEY");
+// ------------------------------------
 
 function initMap() {
 
@@ -111,15 +98,11 @@ function initMap() {
         });
 
 
-
         // results is whatever is returned from the GET request, 
         // JSON in this case
         $.get('/crimes.json', function(results) {
               var heatmapData = [];
               var crimes_found = results.crimes; // a list of dictionaries
-
-              // console.log("This is crimes_found lat " + crimes_found[0].latitude);
-              // console.log("This is crimes_found lng" + crimes_found[0].longitude);
 
               // Loop through all of the crimes in the json
               for (var i = 0; i < crimes_found.length; i++) {
@@ -129,11 +112,6 @@ function initMap() {
                                         crimes_found[i].longitude);
 
                   heatmapData.push(latLng);
-                  // set a new marker and place onto map
-                  // var marker = new google.maps.Marker({
-                  //     position: latLng,
-                  //     map: map
-                  // });
               } // end for
               var heatmap = new google.maps.visualization.HeatmapLayer({
                 data: heatmapData,
@@ -150,52 +128,6 @@ function initMap() {
 
 // display the map
 google.maps.event.addDomListener(window, 'load', initMap);
-
-function generateBounds() {
-        // this section generates the inner and outer bounding box
-
-        // original start(40.760385 -73.9766736) end(40.7539472 -73.9811953)
-        // (40.760385, -73.9811953) (40.7539472, -73.9766736)
-        // playing around with markers again to see if bound square works
-        // var top_left_small = new google.maps.Marker({ // added 0.005 to lat, 0.02 lng
-        //                   position: {lat: 40.765385, lng: -73.9966736},
-        //                   map: map,
-        //                   title: 'Top Left'
-        //                 });
-
-        // var bottom_right_small = new google.maps.Marker({ // added 0.005 to lat, 0.02 lng
-        //                   position: {lat: 40.7489472, lng: -73.9611953},
-        //                   map: map,
-        //                   title: 'Bottom Right'
-        //                 });
-
-
-        // {
-        //   north: 40.7539472,
-        //   south: 40.760385,
-        //   east: -73.9766736,
-        //   west: -73.9811953
-        // }
-        // northeast and southwest needed to generate rectangle
-        // var small_latlng_bounds = new google.maps.LatLngBounds(
-        //                            new google.maps.LatLng(40.765385, -73.9966736),
-        //                            new google.maps.LatLng(40.7489472, -73.9611953));
-
-        console.log("This is NORTHEASTINNER", NORTHEASTINNER);
-        var small_latlng_bounds = new google.maps.LatLngBounds(
-                                   new google.maps.LatLng(NORTHEASTINNER),
-                                   new google.maps.LatLng(SOUTHWESTINNER));
-
-        var inner_rectangle = new google.maps.Rectangle({
-                              strokeColor: '#000000',
-                              strokeOpacity: 0.15,
-                              strokeWeight: 2,
-                              fillColor: '#000000',
-                              fillOpacity: 0.1,
-                              map: map,
-                              bounds: small_latlng_bounds
-                            });
-}
 
 
 function calculateAndDisplayRoute() {

@@ -14,10 +14,10 @@ def index():
     return render_template("main.html")
 
 
-@app.route('/geojson_sample.json')
-def geojson_sample():
-    """ return a geojson """
-    return jsonify(construct())
+# @app.route('/geojson_sample.json')
+# def geojson_sample():
+#     """ return a geojson """
+#     return jsonify(construct())
 
 
 @app.route('/start-end.json')
@@ -41,11 +41,13 @@ def parse_user_start_end():
 @app.route('/directions-data.json', methods=['POST'])
 def directionsData():
     """ This holds all of the leg information pertaining to the route
-        and all of this other fancy stuff """
+        and all of this other fancy stuff  and returns back the waypoint(s) 
+        if necessary. """
 
     directions_data = request.form
-    print "This is directions_data", directions_data
+    print "This is directions_data", json.dumps(directions_data, indent=2)
 
+    # this will be replaced later with the waypoints I'd be sending back
     return jsonify({'hi': 'monique'})
 
 
