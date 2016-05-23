@@ -43,10 +43,11 @@ def directionsData():
     """ This holds all of the leg information pertaining to the route
         and all of this other fancy stuff """
 
-    directions_data = request.get_json()
+    directions_data = request.form
     print "This is directions_data", directions_data
 
-    return directions_data
+    return jsonify({'hi': 'monique'})
+
 
 @app.route('/crimes.json')
 def crimes():
