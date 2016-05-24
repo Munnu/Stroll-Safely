@@ -57,41 +57,21 @@ def get_route_dict(detail_of_trip):
     # detail_of_trip = json.loads(detail_of_trip)
     detail_of_trip = dict(detail_of_trip)
 
-    # print "\n\n\n\n\n!!!!!!!!!!", detail_of_trip
-
     # $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
     # since I can't get javascript to load, here's a hacky way of loading json
     # that details the route based on the user's point A and point B
-    # detail_of_trip = api.directions(
-    #                         (user_coords['point_a']['lat'], 
-    #                         user_coords['point_a']['lng']),
-    #                         (user_coords['point_b']['lat'], 
-    #                         user_coords['point_b']['lng']),
-    #                         mode="walking"
-    #                         )
-
     # detail_of_trip = api.directions(
     #                         (40.760350, -73.976209),
     #                         (40.754009, -73.981097),
     #                         mode="walking"
     #                         )[0]
-
-    print "==========================================="
-    print type(detail_of_trip)
-    print "==========================================="
-    # # print json.dumps(detail_of_trip['legs'], indent=2)
-    # print json.dumps(detail_of_trip, indent=2)
-    # print type(detail_of_trip)
-    # print "==========================================="
     # $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 
     # now that I have javascript sending over the json, load json that details
     # the route based on the user's point A and point B
 
-
     # -------------- This section is for interpolation/splitting using shapely
     print "length of route, legs", len(detail_of_trip['legs'])
-    print "\n\n\n\n"  # compensating for the giant GET request
     first = True
     line_points = []
     for leg in detail_of_trip['legs']:
@@ -105,6 +85,7 @@ def get_route_dict(detail_of_trip):
                 first = False
             line_points.append([step['end_location']['lat'], step['end_location']['lng']])
     print "This is line_points", line_points
+    print "\n\n\n\n"  # compensating for the giant GET request
 
     return "get_route_dict"
 
