@@ -108,11 +108,30 @@ def chunk_user_route(detail_of_trip):
 
         # call the function that checks to see what geohash the line falls under
         # and if it is a high crime area
+        # geohash_data is a dict: crime_index, total_crimes, lng, lat, geohash
         geohash_data = get_position_geohash(point.x, point.y)
         geohash_data['lat'] = point.x
         geohash_data['lng'] = point.y
 
+        # ====================================================================
+        # waypoint algorithm fleshing out
+        # ====================================================================
         if geohash_data['crime_index'] > 0.2:
+            # get the center of the geohash
+            print "This is geohash_data", geohash_data
+
+            # SELECT geohash, ST_AsText(ST_PointFromGeoHash(geohash))
+            # FROM nyc_crimes_by_geohash LIMIT 1;
+            # some raw sql to get the center coords of geohash
+            geohash_center_sql = "SELECT " + \
+                          "ST_AsText(ST_PointFromGeoHash(geohash)) " + \
+                          "FROM nyc_crimes_by_geohash " + \
+                          "WHERE geohash='%s'" % (geohash_data['geohash'])
+
+            # execute the raw sql, and there should only be one result... so get that.
+            geohash_center_query = db.engine.execute(geohash_center_sql).fetchone()
+            print "this is geohash_center_query", geohash_center_query
+
             # this is a dummy test, but let's assume this is high crime
             # and do something about it
             # do some waypoint stuff here
@@ -147,7 +166,7 @@ def chunk_user_route(detail_of_trip):
         'lng': line_points[-1][1]
         }
 
-    print "segmented_points", json.dumps(segmented_points, indent=2)
+    # print "segmented_points", json.dumps(segmented_points, indent=2)
     print "\n\n\n\n"  # compensating for the giant GET request
 
     # return only the waypoints and start/end lat,lngs
