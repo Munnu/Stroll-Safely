@@ -163,3 +163,13 @@ Add a fkey relationship constraint to crime_data_nyc
 `
 ALTER TABLE crime_data_nyc ADD CONSTRAINT geohash_fkey FOREIGN KEY (geohash) REFERENCES nyc_crimes_by_geohash (geohash);
 `
+
+To get centerpoint of geohash:
+
+```
+SELECT geohash, ST_AsText(ST_PointFromGeoHash(geohash)) FROM nyc_crimes_by_geohash LIMIT 1;
+
+ geohash |                 st_astext                 
+---------+-------------------------------------------
+ hfv5cr7 | POINT(40.8409881591797 -73.8315582275391)
+ ```
