@@ -92,6 +92,7 @@ def chunk_user_route(detail_of_trip):
     # element as that's the start position and that's already stored
 
     segmented_points = []  # creating an empty list to store these points
+    segmented_points.append({'waypoints': []}) # hold all the waypoints
     for i in range(1, 11):
         # Note: the output of interpolate is a Point data type
         # Return a point at the specified distance along a linear geometric object.
@@ -103,7 +104,6 @@ def chunk_user_route(detail_of_trip):
         geohash_data = get_position_geohash(point.x, point.y)
         geohash_data['lat'] = point.x
         geohash_data['lng'] = point.y
-        geohash_data['waypoints'] = []  # hold all the waypoints
 
         if geohash_data['crime_index'] > 0.08:
             # this is a dummy test, but let's assume this is high crime
@@ -117,7 +117,7 @@ def chunk_user_route(detail_of_trip):
             # Ex: check one geohash up and one geohash down, see which one has
             # the lowest crime value out of the 3 points, and go there.
             geohash_data['is_high_crime'] = True
-            geohash_data['waypoints'].append({
+            segmented_points[0]['waypoints'].append({
                 'location': {'lat': 40.757560, 'lng': -73.968781},
                 'stopover': False  # it's not a stop on the route, but a recalc
                 })
