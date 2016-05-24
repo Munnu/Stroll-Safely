@@ -92,11 +92,13 @@ def chunk_user_route(detail_of_trip):
     # element as that's the start position and that's already stored
 
     segmented_points = []  # creating an empty list to store these points
-    segmented_points.append({'data': {'waypoints': [] }})  # hold all the waypoints and other data
+
+    # hold all the waypoints and other data
+    segmented_points.append({'data': {'waypoints': [] }})
+
+    # for our start points that the user defines, geocoded
     segmented_points[0]['data']['start'] = {}
     segmented_points[0]['data']['end'] = {}
-
-    # segmented_points.append({'waypoints': []})  # hold all the waypoints
 
     for i in range(1, 11):
         # Note: the output of interpolate is a Point data type
