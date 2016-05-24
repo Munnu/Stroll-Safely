@@ -49,13 +49,12 @@ def address_to_lat_lng(user_points):
     return user_coords
 
 
-def get_route_dict(detail_of_trip):
-    """ I haven't thought of a better name yet, I'll figure it out as I type """
+def chunk_user_route(detail_of_trip):
+    """ This takes the entire length of the route and breaks it up into
+        smaller segments for sampling purposes. """
 
-    # why does this not work?
-    # print "!!!!!!!!!!!!!!!"
-    # detail_of_trip = json.loads(detail_of_trip)
-    detail_of_trip = dict(detail_of_trip)
+    segment_size = 0.1  # value to break the entire route into 1/10 segments
+    distance_along_line = 0.1  # start distance along line at the segment size
 
     # $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
     # since I can't get javascript to load, here's a hacky way of loading json
@@ -72,8 +71,9 @@ def get_route_dict(detail_of_trip):
 
     # -------------- This section is for interpolation/splitting using shapely
     print "length of route, legs", len(detail_of_trip['legs'])
-    first = True
-    line_points = []
+    first = True  # to see if this is the start position for the entire route
+    line_points = []  # stores all the points to the route based on dict passed
+
     for leg in detail_of_trip['legs']:
         for step in leg['steps']:
             # Create a list of two element lists that represent points along the
@@ -84,46 +84,72 @@ def get_route_dict(detail_of_trip):
                 line_points.append([step['start_location']['lat'], step['start_location']['lng']])
                 first = False
             line_points.append([step['end_location']['lat'], step['end_location']['lng']])
-    print "This is line_points", line_points
+
+    # Now load those points into a geometry, here shapely's LineString type.
+    route_line = LineString(line_points)
+
+    # break up the line into 1/10 segments, iterate. We are ignoring the 0th
+    # element as that's the start position and that's already stored
+
+    segmented_points = []  # creating an empty list to store these points
+    for i in range(1, 11):
+        # Note: the output of interpolate is a Point data type
+        # Return a point at the specified distance along a linear geometric object.
+        point = route_line.interpolate(distance_along_line, normalized=True)
+        print "Point ", i, point
+
+        # call the function that checks to see what geohash the line falls under
+        # and if it is a high crime area
+        geohash_data = get_position_geohash(point.x, point.y)
+        geohash_data['lat'] = point.x
+        geohash_data['lng'] = point.y
+
+        if geohash_data['crime_index'] > 0.08:
+            # this is a dummy test, but let's assume this is high crime
+            # and do something about it
+            # do some waypoint stuff here
+            print "HIGH CRIME"
+            geohash_data['is_high_crime'] = True
+        else:
+            geohash_data['is_high_crime'] = False
+
+        # extract the datapoints from the point datatype
+        segmented_points.append(geohash_data)  # append data on location
+        distance_along_line += segment_size
+    print "segmented_points", json.dumps(segmented_points, indent=2)
     print "\n\n\n\n"  # compensating for the giant GET request
 
     return "get_route_dict"
 
 
-def get_position_geohash(detail_of_trip):
+def get_position_geohash(point_lat, point_lng):
     """ This takes a point and with that point find out what geohash it falls
         under. With that information we could get the crime_index and total_crimes
     """
-    # a test to see if I could get the latlng of the first step's start pos
-    # and get the geohash and crime_index from the database
-    first_step_start_loc = detail_of_trip['legs'][0]['steps'][0]['start_location']
-    print json.dumps(first_step_start_loc, indent=2)
+    # get the lat, lng position and get the geohash and crime_index from the db
+
 
     # some raw sql to do the geohash conversion
     geohash_sql = "SELECT * " + \
                   "FROM nyc_crimes_by_geohash " + \
                   "WHERE geohash=" + \
                   "ST_GeoHash(st_makepoint(%s, %s), 7);" % \
-                  (first_step_start_loc['lat'], first_step_start_loc['lng'])
+                  (point_lat, point_lng)
 
-    # execute the raw sql
-    geohash_query =db.engine.execute(geohash_sql)
+    # execute the raw sql, and there should only be one result... so get that.
+    geohash_query =db.engine.execute(geohash_sql).fetchone()
 
-    # there should be only one result, so
-    geohashes_found = ()
-    for row in geohash_query:
-        geohashes_found = row[1:]
+    geohash_query_data = {
+        'geohash': geohash_query[1],
+        'total_crimes': geohash_query[2],
+        'crime_index': float(geohash_query[3])
+        }
 
     # TODO: Write something that checks queries based on the crime_count desc
     # find the 5th item in that query and say that any geohash with a crime
     # index greater than or equal to the 5th item is considered dangerous
 
-    print "************************************"
-    print geohashes_found  # format is (geohash, total_crimes, crime_index)
-    print type(geohashes_found[-1])  # is of decimal.decimal type, that's okay
-    print "************************************"
-
-    return "get_position_geohash"
+    return geohash_query_data
 
 
 def get_twenty():

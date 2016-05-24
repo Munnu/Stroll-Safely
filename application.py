@@ -3,7 +3,7 @@ from flask_restful import marshal_with, fields
 from model import Crime_Data_NYC, NYC_Crimes_by_Geohash, connect_to_db
 #from model import init_app
 
-from middle import get_twenty, address_to_lat_lng, get_route_dict
+from middle import get_twenty, address_to_lat_lng, chunk_user_route
 import json
 
 app = Flask(__name__)
@@ -53,7 +53,7 @@ def directionsData():
 
 
     # call a function in middle.py that takes the directions and manipulates
-    waypoints = get_route_dict(directions_data)
+    waypoints = chunk_user_route(directions_data)
 
     # this will be replaced later with the waypoints I'd be sending back
     return jsonify({'hi': 'monique'})
