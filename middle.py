@@ -92,7 +92,12 @@ def chunk_user_route(detail_of_trip):
     # element as that's the start position and that's already stored
 
     segmented_points = []  # creating an empty list to store these points
-    segmented_points.append({'waypoints': []}) # hold all the waypoints
+    segmented_points.append({'data': {'waypoints': [] }})  # hold all the waypoints and other data
+    segmented_points[0]['data']['start'] = {}
+    segmented_points[0]['data']['end'] = {}
+
+    # segmented_points.append({'waypoints': []})  # hold all the waypoints
+
     for i in range(1, 11):
         # Note: the output of interpolate is a Point data type
         # Return a point at the specified distance along a linear geometric object.
@@ -117,7 +122,7 @@ def chunk_user_route(detail_of_trip):
             # Ex: check one geohash up and one geohash down, see which one has
             # the lowest crime value out of the 3 points, and go there.
             geohash_data['is_high_crime'] = True
-            segmented_points[0]['waypoints'].append({
+            segmented_points[0]['data']['waypoints'].append({
                 'location': {'lat': 40.757560, 'lng': -73.968781},
                 'stopover': False  # it's not a stop on the route, but a recalc
                 })
@@ -127,10 +132,23 @@ def chunk_user_route(detail_of_trip):
         # extract the datapoints from the point datatype
         segmented_points.append(geohash_data)  # append data on location
         distance_along_line += segment_size
+
+    # also add the point A, point B latitude and longitude that the user gives
+    # to the data that will be sent back to JS
+    segmented_points[0]['data']['start'] = {
+        'lat': line_points[0][0],
+        'lng': line_points[0][1]
+        }
+
+    segmented_points[0]['data']['end'] = {
+        'lat': line_points[-1][0],
+        'lng': line_points[-1][1]
+        }
+
     print "segmented_points", json.dumps(segmented_points, indent=2)
     print "\n\n\n\n"  # compensating for the giant GET request
 
-    # return only the waypoints
+    # return only the waypoints and start/end lat,lngs
     return segmented_points[0]
 
 

@@ -35,7 +35,6 @@ function calculateAndDisplayRoute() {
       var selectedMode = "WALKING";
       var directionsData;
 
-      // !!!!!!!!!! Having trouble right here, Broken at waypoints construction
       directionsService.route({
           origin: latLangStart,  // Point A
           destination: latLangEnd,  // Point B
@@ -43,44 +42,58 @@ function calculateAndDisplayRoute() {
           // using square brackets and a string value as its
           // "property."
           travelMode: google.maps.TravelMode[selectedMode], // walking only
-          waypoints: [] // pass in waypoints that python gives me
-          // the hard-coded line below works, but the one above doesn't do anything, why?
-          // waypoints: [{'location': {'lat': 40.75756, 'lng': -73.968781}, 'stopover': false}] // pass in waypoints that python gives me
+          waypoints: [] // empty waypoints for now: non-modified route
       }, function(response, status) {
         if (status == google.maps.DirectionsStatus.OK) {
             directionsDisplay.setDirections(response);
-            // need to find a way to return to python this same exact response's 
-            // route's array, something like: directions_data = response['routes']
-            // so that I know the legs to my trip and can check which grids
-            // does a leg pass through.
+            // sends python this same exact response's so that I know the legs 
+            // to my trip and can check which grids does a leg pass through.
             // let's do the process of sending this data over to python, call it
+
+            // console.log statements galore
             console.log("This is the callback response from google maps api");
             console.log("that gives us the legs/steps to the journey");
             console.log("response['routes']", response['routes']);
+
+            // python stuff here
             sendDirectionsResult(response['routes']);
         } else {
             window.alert('Directions request failed due to ' + status);
         }
     });
+
+
+
 }
 
 
-// !!!!!!!!! Problem area !!!!!!!!!
 var showOptimalRoute = function(response) {
     // this will ultimately be the bearer of waypoints.
+    // send waypoint data over to the part of the google api that needs it
+
     console.log("----------------------------------------");
     console.log("showOptimalRoute response: ", response);
     console.log("showOptimalRoute response['waypoints']: ", response['waypoints']);
-    // send waypoint data over to the part of the google api that needs it
     console.log("typeof(response)", typeof(response));
-    console.log("This is response", response); // currently returns undefined
-    // WAYPOINTS = jQuery.makeArray(response);
-    // WAYPOINTS = JSON.parse(response); // Yields an: Uncaught SyntaxError: 
-    // Unexpected token u
-    // console.log("This is waypoints", WAYPOINTS);
-    // console.log("typeof(WAYPOINTS)", WAYPOINTS);
+    console.log("This is response", response);
     console.log("----------------------------------------");
-    return WAYPOINTS;
+
+    // we do this section again because this is the 'after' effect, the first
+    // time got the unmodified route, this is now the modified via python
+    selectedMode = 'WALKING';
+    directionsService.route({
+        origin: response['data']['start'],  // Point A
+        destination: response['data']['end'],  // Point B
+        travelMode: google.maps.TravelMode[selectedMode], // walking only
+        waypoints: response['data']['waypoints']
+    }, function(response, status) {
+      if (status == google.maps.DirectionsStatus.OK) {
+          directionsDisplay.setDirections(response);
+      } else {
+          window.alert('Directions request failed due to ' + status);
+      }
+  });
+
 };
 
 var sendDirectionsResult = function(returnedDirectionsData) {
@@ -98,7 +111,6 @@ var sendDirectionsResult = function(returnedDirectionsData) {
     // not passing in the data parameter because that's coming in as an argument
     $.get(url, success=showOptimalRoute); // success function is needed
 };
-// !!!!!!!! end problem area !!!!!!!!
 
 var startDirections =  function(event){
     /* gets the user's input and sends it over to the flask json endpoint */
