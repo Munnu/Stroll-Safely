@@ -63,8 +63,8 @@ def directionsData():
     print "Is this a string type for real?", isinstance(json.dumps(waypoints), str)  # true
     print "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@"
     # waypoints to be sent back, json.dumps because we're sending a list
-    return json.dumps(waypoints)
-    # return jsonify(waypoints)
+    # return json.dumps(waypoints)
+    return jsonify(waypoints)
 
 
 @app.route('/crimes.json')

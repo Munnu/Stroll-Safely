@@ -43,7 +43,7 @@ function calculateAndDisplayRoute() {
           // using square brackets and a string value as its
           // "property."
           travelMode: google.maps.TravelMode[selectedMode], // walking only
-          waypoints: showOptimalRoute() // pass in waypoints that python gives me
+          waypoints: [] // pass in waypoints that python gives me
           // the hard-coded line below works, but the one above doesn't do anything, why?
           // waypoints: [{'location': {'lat': 40.75756, 'lng': -73.968781}, 'stopover': false}] // pass in waypoints that python gives me
       }, function(response, status) {
@@ -70,12 +70,15 @@ var showOptimalRoute = function(response) {
     // this will ultimately be the bearer of waypoints.
     console.log("----------------------------------------");
     console.log("showOptimalRoute response: ", response);
-
+    console.log("showOptimalRoute response['waypoints']: ", response['waypoints']);
     // send waypoint data over to the part of the google api that needs it
-    WAYPOINTS = jQuery.makeArray(response);
-    // WAYPOINTS = JSON.parse(response);
+    console.log("typeof(response)", typeof(response));
     console.log("This is response", response); // currently returns undefined
-    console.log("This is waypoints", WAYPOINTS);
+    // WAYPOINTS = jQuery.makeArray(response);
+    // WAYPOINTS = JSON.parse(response); // Yields an: Uncaught SyntaxError: 
+    // Unexpected token u
+    // console.log("This is waypoints", WAYPOINTS);
+    // console.log("typeof(WAYPOINTS)", WAYPOINTS);
     console.log("----------------------------------------");
     return WAYPOINTS;
 };
