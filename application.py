@@ -3,7 +3,8 @@ from flask_restful import marshal_with, fields
 from model import Crime_Data_NYC, NYC_Crimes_by_Geohash, connect_to_db
 #from model import init_app
 
-from middle import get_twenty, address_to_lat_lng
+from middle import get_twenty, address_to_lat_lng, get_route_dict
+import json
 
 app = Flask(__name__)
 
@@ -38,14 +39,21 @@ def parse_user_start_end():
     return jsonify(lat_lng_dict)
 
 
-@app.route('/directions-data.json', methods=['POST'])
+@app.route('/directions-data.json', methods=['GET'])
 def directionsData():
     """ This holds all of the leg information pertaining to the route
         and all of this other fancy stuff  and returns back the waypoint(s)
         if necessary. """
 
-    directions_data = request.form
-    print "This is directions_data", directions_data
+    directions_data = request.args.get('data')
+    directions_data = json.loads(directions_data)
+    print "+++++++++++++++++++++++++++++++++++++++++++++"
+    print "This is directions_data", json.dumps(directions_data, indent=2)
+    print "+++++++++++++++++++++++++++++++++++++++++++++"
+
+
+    # call a function in middle.py that takes the directions and manipulates
+    waypoints = get_route_dict(directions_data)
 
     # this will be replaced later with the waypoints I'd be sending back
     return jsonify({'hi': 'monique'})

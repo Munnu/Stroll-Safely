@@ -56,7 +56,8 @@ function calculateAndDisplayRoute() {
             // so that I know the legs to my trip and can check which grids
             // does a leg pass through.
             // let's do the process of sending this data over to python, call it
-            sendDirectionsResult(response['routes'][0]);
+            console.log(response['routes']);
+            sendDirectionsResult(response['routes']);
         } else {
             window.alert('Directions request failed due to ' + status);
         }
@@ -68,6 +69,7 @@ function calculateAndDisplayRoute() {
 
 
 var showOptimalRoute = function(response) {
+    // this will ultimately be the bearer of waypoints.
     console.log("showOptimalRoute response: ", response);
     //debugger;
 };
@@ -79,11 +81,13 @@ var sendDirectionsResult = function(returnedDirectionsData) {
     // to analyze the legs of the trip.
 
     // assemble a url (this will be our flask route), so exciting...
-    var url = '/directions-data.json';
-    returnedDirectionsData = JSON.stringify(returnedDirectionsData);
+    // the data parameter is needed and the json stringify or else it would be
+    // nearly impossible to extract the data when attempting in flask
+    var url = '/directions-data.json?data=' + JSON.stringify(returnedDirectionsData[0]);
 
     // this next step is to pass the values into the flask json endpoint
-    $.post(url, returnedDirectionsData, showOptimalRoute); // success function is needed
+    // not passing in the data parameter because that's coming in as an argument
+    $.get(url, success=showOptimalRoute); // success function is needed
 };
 
 var startDirections =  function(event){
