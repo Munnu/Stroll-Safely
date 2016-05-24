@@ -103,13 +103,24 @@ def chunk_user_route(detail_of_trip):
         geohash_data = get_position_geohash(point.x, point.y)
         geohash_data['lat'] = point.x
         geohash_data['lng'] = point.y
+        geohash_data['waypoints'] = []  # hold all the waypoints
 
         if geohash_data['crime_index'] > 0.08:
             # this is a dummy test, but let's assume this is high crime
             # and do something about it
             # do some waypoint stuff here
-            print "HIGH CRIME"
+            # for waypoints ideas: Now that we know that the area is high crime
+            # check how far the previous step is from the next step in the
+            # dictionary, and then if both steps have a short delta in the same
+            # direction, that means to go one grid up-down, or left-right
+            # based on that delta value.
+            # Ex: check one geohash up and one geohash down, see which one has
+            # the lowest crime value out of the 3 points, and go there.
             geohash_data['is_high_crime'] = True
+            geohash_data['waypoints'].append({
+                'location': {'lat': 40.757560, 'lng': -73.968781},
+                'stopover': False  # it's not a stop on the route, but a recalc
+                })
         else:
             geohash_data['is_high_crime'] = False
 
