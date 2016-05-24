@@ -5,6 +5,8 @@ var directionsService;
 var START = {};
 var END = {};
 
+var WAYPOINTS;
+
 
 var getUserData = function(results) {
     // retreive the assembled lat/lng from the flask JSON route
@@ -13,12 +15,6 @@ var getUserData = function(results) {
 
     END.lat = results.point_b.lat; // for end route
     END.lng = results.point_b.lng;
-
-    // console.log for debugging, keeping these in for now
-    console.log("This is START ");
-    console.log(START);
-    console.log("This is inside of getUserData START" + START.lat + " " + START.lng);
-    console.log("This is inside of getUserData END" + END.lat + " " + END.lng);
 
     // display the user data that was submitted and returned back from flask
     // $('#get-user-data').html(results.point_a.lat + " " + results.point_a.lng);
@@ -33,13 +29,13 @@ function calculateAndDisplayRoute() {
 
       // try doing this: 40.673301, -73.780351
       // create two points: A and B
-      console.log("Start Point", START);
       var latLangStart = new google.maps.LatLng(START.lat, START.lng);
       var latLangEnd = new google.maps.LatLng(END.lat, END.lng);
 
       var selectedMode = "WALKING";
       var directionsData;
 
+      // !!!!!!!!!! Having trouble right here, Broken at waypoints construction
       directionsService.route({
           origin: latLangStart,  // Point A
           destination: latLangEnd,  // Point B
@@ -47,7 +43,9 @@ function calculateAndDisplayRoute() {
           // using square brackets and a string value as its
           // "property."
           travelMode: google.maps.TravelMode[selectedMode], // walking only
-          waypoints: [] // this is for later, I will need to pass in waypoints that python gives me
+          waypoints: showOptimalRoute() // pass in waypoints that python gives me
+          // the hard-coded line below works, but the one above doesn't do anything, why?
+          // waypoints: [{'location': {'lat': 40.75756, 'lng': -73.968781}, 'stopover': false}] // pass in waypoints that python gives me
       }, function(response, status) {
         if (status == google.maps.DirectionsStatus.OK) {
             directionsDisplay.setDirections(response);
@@ -56,22 +54,30 @@ function calculateAndDisplayRoute() {
             // so that I know the legs to my trip and can check which grids
             // does a leg pass through.
             // let's do the process of sending this data over to python, call it
-            console.log(response['routes']);
+            console.log("This is the callback response from google maps api");
+            console.log("that gives us the legs/steps to the journey");
+            console.log("response['routes']", response['routes']);
             sendDirectionsResult(response['routes']);
         } else {
             window.alert('Directions request failed due to ' + status);
         }
     });
-
-      console.log("This is directionsData (directionsService and directionsResult)",
-                  directionsData);
 }
 
 
+// !!!!!!!!! Problem area !!!!!!!!!
 var showOptimalRoute = function(response) {
     // this will ultimately be the bearer of waypoints.
+    console.log("----------------------------------------");
     console.log("showOptimalRoute response: ", response);
-    //debugger;
+
+    // send waypoint data over to the part of the google api that needs it
+    WAYPOINTS = jQuery.makeArray(response);
+    // WAYPOINTS = JSON.parse(response);
+    console.log("This is response", response); // currently returns undefined
+    console.log("This is waypoints", WAYPOINTS);
+    console.log("----------------------------------------");
+    return WAYPOINTS;
 };
 
 var sendDirectionsResult = function(returnedDirectionsData) {
@@ -89,8 +95,11 @@ var sendDirectionsResult = function(returnedDirectionsData) {
     // not passing in the data parameter because that's coming in as an argument
     $.get(url, success=showOptimalRoute); // success function is needed
 };
+// !!!!!!!! end problem area !!!!!!!!
 
 var startDirections =  function(event){
+    /* gets the user's input and sends it over to the flask json endpoint */
+
     event.preventDefault(); // need this to prevent GET on form submit refresh
     alert("Inside of startDirections");
 
@@ -109,13 +118,13 @@ $('#route-me').submit(startDirections);
 // ------------------------------------
 
 function initMap() {
+    /* Initializes Google Maps API stuff */
 
     var geocoder = new google.maps.Geocoder();
     var address = "central park new york";
     var center_lat, center_lng = 0;
 
     geocoder.geocode( {'address': address}, function(results, status) {
-        //console.log(results);
         if (status == google.maps.GeocoderStatus.OK) {
               center_lat = results[0].geometry.location.lat();
               center_lng = results[0].geometry.location.lng();

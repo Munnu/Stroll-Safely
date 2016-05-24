@@ -105,7 +105,7 @@ def chunk_user_route(detail_of_trip):
         geohash_data['lat'] = point.x
         geohash_data['lng'] = point.y
 
-        if geohash_data['crime_index'] > 0.08:
+        if geohash_data['crime_index'] > 0.2:
             # this is a dummy test, but let's assume this is high crime
             # and do something about it
             # do some waypoint stuff here
@@ -130,7 +130,8 @@ def chunk_user_route(detail_of_trip):
     print "segmented_points", json.dumps(segmented_points, indent=2)
     print "\n\n\n\n"  # compensating for the giant GET request
 
-    return "get_route_dict"
+    # return only the waypoints
+    return segmented_points[0]
 
 
 def get_position_geohash(point_lat, point_lng):

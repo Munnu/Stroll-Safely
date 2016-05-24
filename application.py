@@ -48,6 +48,7 @@ def directionsData():
     directions_data = request.args.get('data')
     directions_data = json.loads(directions_data)
     print "+++++++++++++++++++++++++++++++++++++++++++++"
+    print "This is directions_data type", type(directions_data)
     print "This is directions_data", json.dumps(directions_data, indent=2)
     print "+++++++++++++++++++++++++++++++++++++++++++++"
 
@@ -55,8 +56,15 @@ def directionsData():
     # call a function in middle.py that takes the directions and manipulates
     waypoints = chunk_user_route(directions_data)
 
-    # this will be replaced later with the waypoints I'd be sending back
-    return jsonify({'hi': 'monique'})
+    print "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@"
+    print "THIS IS WAYPOINTS", waypoints  # currently is a list of locations [{location: ...}, {location: ...}]
+    print "This is directions_data type", type(waypoints)  # type list
+    print "This is directions_data, json.dumps type", type(json.dumps(waypoints))  # type string
+    print "Is this a string type for real?", isinstance(json.dumps(waypoints), str)  # true
+    print "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@"
+    # waypoints to be sent back, json.dumps because we're sending a list
+    return json.dumps(waypoints)
+    # return jsonify(waypoints)
 
 
 @app.route('/crimes.json')
