@@ -163,6 +163,41 @@ function initMap() {
             zoom: 12
         });
 
+        var original = new google.maps.Marker({
+          position: {'lat': 41.88592, 'lng': -87.62788},
+          map: map,
+          title: 'Original'
+        });
+
+        var west = new google.maps.Marker({
+          position: {'lat': 41.88592, 'lng': -87.62988},
+          map: map,
+          title: 'west' // 0
+        });
+
+        var north = new google.maps.Marker({
+          position: {'lat': 41.886982, 'lng': -87.62788},
+          map: map,
+          title: 'north' // 90
+        });
+
+        var east = new google.maps.Marker({
+          position: {'lat': 41.88592, 'lng': -87.62645},
+          map: map,
+          title: 'east'
+        });
+
+        var south = new google.maps.Marker({
+          position: {'lat': 41.8848579989, 'lng': -87.62788},
+          map: map,
+          title: 'south' // 270
+        });
+
+        // var marker = new google.maps.Marker({
+        //   position: {'lat': 40.841356119000785, 'lng': -73.98249060090787},
+        //   map: map,
+        //   title: 'Hello World!'
+        // });
 
         // results is whatever is returned from the GET request, 
         // JSON in this case

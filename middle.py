@@ -5,6 +5,7 @@
 # Gets the crime records
 # ------------------------------------------------------------------------------
 import json, requests
+from math import cos, sin
 from model import Crime_Data_NYC, NYC_Crimes_by_Geohash
 from model import connect_to_db, db, init_app
 from flask_sqlalchemy import SQLAlchemy
@@ -47,6 +48,51 @@ def address_to_lat_lng(user_points):
     user_coords['point_b'] = point_b_geo_results['geometry']['location']
 
     return user_coords
+
+
+def inspect_waypoints(latitude, longitude, direction):
+    # inspect potential waypoints
+    # one degree of latitude is approximately 10^7 / 90 = 111,111 meters.
+    # http://stackoverflow.com/questions/2187657/calculate-second-point-
+    # knowing-the-starting-point-and-distance
+    # one degree of latitude is approximately 10^7 / 90 = 111,111 meters
+    # http://stackoverflow.com/questions/13836416/geohash-and-max-distance
+    # dx = R*cos(theta) 
+    #    = 500 * cos(135 deg) 
+    #    = -353.55 meters
+
+    # dy = R*sin(theta) 
+    #    = 500 * sin(135 deg) 
+    #    = +353.55 meters
+
+    # delta_longitude = dx/(111320*cos(latitude)) 
+    #                 = -353.55/(111320*cos(41.88592 deg))
+    #                 = -.004266 deg (approx -15.36 arcsec)
+
+    # delta_latitude = dy/110540
+    #                = 353.55/110540
+    #                =  .003198 deg (approx 11.51 arcsec)
+
+    # Final longitude = start_longitude + delta_longitude
+    #                 = -87.62788 - .004266
+    #                 = -87.632146
+
+    # Final latitude = start_latitude + delta_latitude
+    #                = 41.88592 + .003198
+    #                = 41.889118
+
+    DEGREE_CONSTANT = 111111
+    DISTANCE_INCREMENT = 118  # meters
+    if direction == 'west':
+        bearing = 0  # this will change based on conditionals of delta x-y
+    elif direction == 'east':
+        bearing = 180  # check to see if this yields good results
+    elif direction == 'north':
+        bearing = 90
+    elif direction == 'south':
+        bearing = 270
+    waypoint_lat = latitude + ( DISTANCE_INCREMENT * sin(bearing) ) / DEGREE_CONSTANT
+    waypoint_lng = longitude + ( DISTANCE_INCREMENT * cos(bearing)) / (111111 * cos(latitude))
 
 
 def chunk_user_route(detail_of_trip):
@@ -120,8 +166,6 @@ def chunk_user_route(detail_of_trip):
             # get the center of the geohash
             print "This is geohash_data", geohash_data
 
-            # SELECT geohash, ST_AsText(ST_PointFromGeoHash(geohash))
-            # FROM nyc_crimes_by_geohash LIMIT 1;
             # some raw sql to get the center coords of geohash
             geohash_center_sql = "SELECT " + \
                           "ST_AsText(ST_PointFromGeoHash(geohash)) " + \
@@ -130,7 +174,22 @@ def chunk_user_route(detail_of_trip):
 
             # execute the raw sql, and there should only be one result... so get that.
             geohash_center_query = db.engine.execute(geohash_center_sql).fetchone()
-            print "this is geohash_center_query", geohash_center_query
+
+            # some string splitting to extract data
+            location = geohash_center_query[0].strip("POINT(").rstrip(")").split()
+            latitude = location[0]
+            longitude = location[1]
+
+            # TODO: before calling inspect_waypoints, check the deltas for the
+            # step before and the step after to determine whether the function
+            # needs to be called twice, or four times, and what direction to go
+
+            # TODO: store the waypoints retreived and compare their crime_index
+            # to the crime index of each other and the current position.
+
+            # call inspect waypoints
+            waypoint1 = inspect_waypoints(latitude, longitude, 'west')
+            waypoint2 = inspect_waypoints(latitude, longitude, 'east')
 
             # this is a dummy test, but let's assume this is high crime
             # and do something about it
