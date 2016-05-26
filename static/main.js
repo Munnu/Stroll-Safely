@@ -163,42 +163,6 @@ function initMap() {
             zoom: 12
         });
 
-        var original = new google.maps.Marker({
-          position: {'lat': 40.7539472, 'lng': -73.9811953},
-          map: map,
-          title: 'Original'
-        });
-
-        var north = new google.maps.Marker({
-          position: {'lat': 40.755009201062, 'lng': -73.9811953},
-          map: map,
-          title: 'north' // 0
-        });
-
-        var south = new google.maps.Marker({
-          position: {'lat': 40.752885198937996, 'lng': -73.9811953},
-          map: map,
-          title: 'south' // 90
-        });
-
-        var east = new google.maps.Marker({
-          position: {'lat': 40.7539472, 'lng': -73.980133298938},
-          map: map,
-          title: 'east'
-        });
-
-        var west = new google.maps.Marker({
-          position: {'lat': 40.7539472, 'lng': -73.98225730106199},
-          map: map,
-          title: 'west' // 270
-        });
-
-        // var marker = new google.maps.Marker({
-        //   position: {'lat': 40.841356119000785, 'lng': -73.98249060090787},
-        //   map: map,
-        //   title: 'Hello World!'
-        // });
-
         // results is whatever is returned from the GET request, 
         // JSON in this case
         $.get('/crimes.json', function(results) {
