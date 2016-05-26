@@ -5,7 +5,7 @@
 # Gets the crime records
 # ------------------------------------------------------------------------------
 import json, requests
-from math import cos, sin
+from math import cos, sin, radians
 from model import Crime_Data_NYC, NYC_Crimes_by_Geohash
 from model import connect_to_db, db, init_app
 from flask_sqlalchemy import SQLAlchemy
@@ -70,6 +70,19 @@ def inspect_waypoints(latitude_longitude, bearing):
     return waypoint_latitude, waypoint_longitude
 
 
+def generate_waypoint(lowest_crime_index, waypoint_dict, segmented_points):
+    """ This function takes in the lowest_crime_index and waypoint dictionary
+        to check if the lowest_crime_index is in that waypoint dictionary
+        and if so, construct waypoint data to insert into list """
+    if lowest_crime_index in waypoint_dict:
+        # store the waypoint coords
+        segmented_points[0]['data']['waypoints'].append({
+            'location': {'lat': waypoint_e[0],
+                         'lng': waypoint_e[1]},
+            'stopover': False  # b/c not stop on the route, a recalc
+            })
+
+
 def chunk_user_route(detail_of_trip):
     """ This takes the entire length of the route and breaks it up into
         smaller segments for sampling purposes. """
@@ -131,6 +144,9 @@ def chunk_user_route(detail_of_trip):
         # geohash_data is a dict: crime_index, total_crimes, lng, lat, geohash
         geohash_data = get_position_geohash(point.x, point.y)
 
+        # set the is_high_crime variable value to false, for testing
+        geohash_data['is_high_crime'] = False
+
         # extract the datapoints from the point datatype
         geohash_data['lat'] = point.x
         geohash_data['lng'] = point.y
@@ -185,9 +201,11 @@ def chunk_user_route(detail_of_trip):
                 if j is 0:
                     # this is the 2nd point, we need to get from the start dict
                     print "inside of if j is 0"
+                    pass
                 else:
                     # this is the 2nd to last point, we need to get from the end dict
                     print "inside of if j is len(segmented_points)"
+                    pass
             else:
                 # now that we know what the bad neighborhood point is, let's get
                 # the latitude, longitude from the point before and the point after
@@ -231,41 +249,46 @@ def chunk_user_route(detail_of_trip):
                     waypoint_w_geohash_data = get_position_geohash(
                         waypoint_w[0], waypoint_w[1])
 
-                    lowest_crime_area = min(
+                    lowest_crime_index = min(
                         waypoint_e_geohash_data['crime_index'],
                         waypoint_w_geohash_data['crime_index'],
-                        current_point['crime_index'])
+                        segmented_points['crime_index'])
 
-                    # retrieve the data that has the lowest crime area
-                    if lowest_crime_area in waypoint_e_geohash_data:
-                        # store the waypoint coords
-                        segmented_points[0]['data']['waypoints'].append({
-                            'location': {'lat': waypoint_e[0],
-                                         'lng': waypoint_e[1]},
-                            'stopover': False  # b/c not stop on the route, a recalc
-                            })
-                    elif lowest_crime_area in waypoint_w_geohash_data:
-                        # store the waypoint coords
-                        segmented_points[0]['data']['waypoints'].append({
-                            'location': {'lat': waypoint_w[0],
-                                         'lng': waypoint_w[1]},
-                            'stopover': False  # b/c not stop on the route, a recalc
-                            })
+                    # check and assemble dict for lowest_crime_index waypoint
+                    generate_waypoint(lowest_crime_index,
+                                      waypoint_e_geohash_data, segmented_points)
+
+                    generate_waypoint(lowest_crime_index,
+                                      waypoint_w_geohash_data, segmented_points)
 
                 elif (delta_lng_before_current > delta_lat_before_current) and \
                      (delta_lng_after_current > delta_lat_after_current):
                     # the longitudes are longer than the latitudes, get waypoints
                     # in the latitude direction
-                    waypoint_data_n = inspect_waypoints(current_point, 0)
-                    waypoint_data_s = inspect_waypoints(current_point, 180)
-                    print "waypoint_data_n", waypoint_data_n
-                    print "waypoint_data_s", waypoint_data_s
+                    waypoint_n = inspect_waypoints(current_point, 0)
+                    waypoint_s = inspect_waypoints(current_point, 180)
+                    print "waypoint_n", waypoint_n
+                    print "waypoint_s", waypoint_s
 
                     # store the waypoints retreived and compare their crime_index
                     waypoint_n_geohash_data = get_position_geohash(
                         waypoint_n[0], waypoint_n[1])
                     waypoint_s_geohash_data = get_position_geohash(
                         waypoint_s[0], waypoint_s[1])
+
+                    print "!!!!!!!!!!!!!!, this is current_point", current_point
+                    # get the lowest crime index out of the bunch
+                    lowest_crime_index = min(
+                        waypoint_n_geohash_data['crime_index'],
+                        waypoint_s_geohash_data['crime_index'],
+                        segmented_points[j]['crime_index'])
+
+                    # check and assemble dict for lowest_crime_index waypoint
+                    generate_waypoint(lowest_crime_index,
+                                      waypoint_n_geohash_data, segmented_points)
+
+                    generate_waypoint(lowest_crime_index,
+                                      waypoint_s_geohash_data, segmented_points)
                 else:
                     # get waypoints in all directions
                     waypoint_data_n = inspect_waypoints(current_point, 0)
@@ -288,26 +311,27 @@ def chunk_user_route(detail_of_trip):
                         waypoint_e[0], waypoint_e[1])
                     waypoint_w_geohash_data = get_position_geohash(
                         waypoint_w[0], waypoint_w[1])
-        #     # TODO: store the waypoints retreived and compare their crime_index
-        #     # to the crime index of each other and the current position.
 
-        #     # call inspect waypoints
-        #     waypoint1 = inspect_waypoints(latitude, longitude, 'west')
-        #     waypoint2 = inspect_waypoints(latitude, longitude, 'east')
+                    # get the lowest crime index out of the bunch
+                    lowest_crime_index = min(
+                        waypoint_n_geohash_data['crime_index'],
+                        waypoint_s_geohash_data['crime_index'],
+                        waypoint_e_geohash_data['crime_index'],
+                        waypoint_w_geohash_data['crime_index'],
+                        segmented_points[j]['crime_index'])
 
-        #     # this is a dummy test, but let's assume this is high crime
-        #     # and do something about it
-        #     # do some waypoint stuff here
-        #     # for waypoints ideas: Now that we know that the area is high crime
-        #     # check how far the previous step is from the next step in the
-        #     # dictionary, and then if both steps have a short delta in the same
-        #     # direction, that means to go one grid up-down, or left-right
-        #     # based on that delta value.
-        #     # Ex: check one geohash up and one geohash down, see which one has
-        #     # the lowest crime value out of the 3 points, and go there.
+                    # check and assemble dict for lowest_crime_index waypoint
+                    generate_waypoint(lowest_crime_index,
+                                      waypoint_n_geohash_data, segmented_points)
 
-        # else:
-        #     geohash_data['is_high_crime'] = False
+                    generate_waypoint(lowest_crime_index,
+                                      waypoint_s_geohash_data, segmented_points)
+
+                    generate_waypoint(lowest_crime_index,
+                                      waypoint_e_geohash_data, segmented_points)
+
+                    generate_waypoint(lowest_crime_index,
+                                      waypoint_w_geohash_data, segmented_points)
 
     # print "segmented_points", json.dumps(segmented_points, indent=2)
     print "\n\n\n\n"  # compensating for the giant GET request
