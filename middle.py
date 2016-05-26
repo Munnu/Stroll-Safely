@@ -57,7 +57,7 @@ def inspect_waypoints(latitude_longitude, bearing):
     # knowing-the-starting-point-and-distance
     # one degree of latitude is approximately 10^7 / 90 = 111,111 meters
     # http://stackoverflow.com/questions/13836416/geohash-and-max-distance
-    distance = 119  # meters
+    distance = 118  # meters
     latitude = latitude_longitude[0]
     longitude = latitude_longitude[1]
 
@@ -77,8 +77,6 @@ def generate_waypoint(lowest_crime_index, waypoint_dict, segmented_points, waypo
 
     print "inside generate_waypoint"
     print "This is waypoint_dict", waypoint_dict
-    # import pdb
-    # pdb.set_trace()
     if lowest_crime_index in waypoint_dict.values():
         print "if statement: lowest_crime_index in waypoint_dict"
         # store the waypoint coords
