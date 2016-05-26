@@ -164,33 +164,33 @@ function initMap() {
         });
 
         var original = new google.maps.Marker({
-          position: {'lat': 41.88592, 'lng': -87.62788},
+          position: {'lat': 40.7539472, 'lng': -73.9811953},
           map: map,
           title: 'Original'
         });
 
-        var west = new google.maps.Marker({
-          position: {'lat': 41.88592, 'lng': -87.62988},
+        var north = new google.maps.Marker({
+          position: {'lat': 40.755009201062, 'lng': -73.9811953},
           map: map,
-          title: 'west' // 0
+          title: 'north' // 0
         });
 
-        var north = new google.maps.Marker({
-          position: {'lat': 41.886982, 'lng': -87.62788},
+        var south = new google.maps.Marker({
+          position: {'lat': 40.752885198937996, 'lng': -73.9811953},
           map: map,
-          title: 'north' // 90
+          title: 'south' // 90
         });
 
         var east = new google.maps.Marker({
-          position: {'lat': 41.88592, 'lng': -87.62645},
+          position: {'lat': 40.7539472, 'lng': -73.980133298938},
           map: map,
           title: 'east'
         });
 
-        var south = new google.maps.Marker({
-          position: {'lat': 41.8848579989, 'lng': -87.62788},
+        var west = new google.maps.Marker({
+          position: {'lat': 40.7539472, 'lng': -73.98225730106199},
           map: map,
-          title: 'south' // 270
+          title: 'west' // 270
         });
 
         // var marker = new google.maps.Marker({
