@@ -47,10 +47,10 @@ def directionsData():
 
     directions_data = request.args.get('data')
     directions_data = json.loads(directions_data)
-    print "+++++++++++++++++++++++++++++++++++++++++++++"
-    print "This is directions_data type", type(directions_data)
-    print "This is directions_data", json.dumps(directions_data, indent=2)
-    print "+++++++++++++++++++++++++++++++++++++++++++++"
+    # print "+++++++++++++++++++++++++++++++++++++++++++++"
+    # print "This is directions_data type", type(directions_data)
+    # print "This is directions_data", json.dumps(directions_data, indent=2)
+    # print "+++++++++++++++++++++++++++++++++++++++++++++"
 
 
     # call a function in middle.py that takes the directions and manipulates
