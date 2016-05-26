@@ -173,3 +173,6 @@ SELECT geohash, ST_AsText(ST_PointFromGeoHash(geohash)) FROM nyc_crimes_by_geoha
 ---------+-------------------------------------------
  hfv5cr7 | POINT(40.8409881591797 -73.8315582275391)
  ```
+ 
+#May 26th Log:
+I haven't added anything to my diary in days because I have been extremely focused on making sure I reach my MVP. Today I've reached it, though I need to tweak it a little and add some extra code. So since I first started doing this project I couldn't get my API key to work. I found out the reason why the API key doesn't work is because one of the things that needs to be activated is the Google JavaScript API.
