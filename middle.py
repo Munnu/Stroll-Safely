@@ -312,15 +312,15 @@ def chunk_user_route(detail_of_trip):
                 else:
                     print "inside else"
                     # get waypoints in all directions
-                    waypoint_data_n = inspect_waypoints(current_point, 0)
-                    waypoint_data_s = inspect_waypoints(current_point, 180)
-                    print "waypoint_data_n", waypoint_data_n
-                    print "waypoint_data_s", waypoint_data_s
+                    waypoint_n = inspect_waypoints(current_point, 0)
+                    waypoint_s = inspect_waypoints(current_point, 180)
+                    print "waypoint_n", waypoint_n
+                    print "waypoint_s", waypoint_s
 
-                    waypoint_data_e = inspect_waypoints(current_point, 90)
-                    waypoint_data_w = inspect_waypoints(current_point, 270)
-                    print "waypoint_data_e", waypoint_data_e
-                    print "waypoint_data_w", waypoint_data_w
+                    waypoint_e = inspect_waypoints(current_point, 90)
+                    waypoint_w = inspect_waypoints(current_point, 270)
+                    print "waypoint_e", waypoint_e
+                    print "waypoint_data_w", waypoint_w
 
                     # store the waypoints retreived and compare their crime_index
                     waypoint_n_geohash_data = get_position_geohash(
@@ -342,17 +342,17 @@ def chunk_user_route(detail_of_trip):
                         segmented_points[j]['crime_index'])
 
                     # check and assemble dict for lowest_crime_index waypoint
-                    generate_waypoint(lowest_crime_index,
-                                      waypoint_n_geohash_data, segmented_points)
+                    generate_waypoint(lowest_crime_index, waypoint_n_geohash_data,
+                        segmented_points, waypoint_n)
 
-                    generate_waypoint(lowest_crime_index,
-                                      waypoint_s_geohash_data, segmented_points)
+                    generate_waypoint(lowest_crime_index, waypoint_s_geohash_data,
+                        segmented_points, waypoint_s)
 
-                    generate_waypoint(lowest_crime_index,
-                                      waypoint_e_geohash_data, segmented_points)
+                    generate_waypoint(lowest_crime_index, waypoint_e_geohash_data,
+                        segmented_points, waypoint_e)
 
-                    generate_waypoint(lowest_crime_index,
-                                      waypoint_w_geohash_data, segmented_points)
+                    generate_waypoint(lowest_crime_index, waypoint_w_geohash_data,
+                        segmented_points, waypoint_w)
 
     # print "segmented_points", json.dumps(segmented_points, indent=2)
     print "\n\n\n\n"  # compensating for the giant GET request
