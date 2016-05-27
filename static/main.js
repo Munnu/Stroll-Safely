@@ -18,8 +18,8 @@ var getUserData = function(results) {
 
     // display the user data that was submitted and returned back from flask
     // $('#get-user-data').html(results.point_a.lat + " " + results.point_a.lng);
-    $('#parse-user-data').html("start: " + START.lat + " " + START.lng +
-                              " end: " + END.lat + " " + END.lng);
+    // $('#parse-user-data').html("start: " + START.lat + " " + START.lng +
+    //                           " end: " + END.lat + " " + END.lng);
 
     // now that we have the start coords, load up calculateAndDisplayRoute
     calculateAndDisplayRoute();
