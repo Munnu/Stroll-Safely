@@ -216,10 +216,25 @@ def chunk_user_route(detail_of_trip):
                 print "outer else"
                 # now that we know what the bad neighborhood point is, let's get
                 # the latitude, longitude from the point before and the point after
+                print "This is current_point", segmented_points
+                print
+                print "This is segmented_points[j-1]", segmented_points[j-1]
+                print
+                print "This is segmented_points[j+1]", segmented_points[j+1]
+                print
+                if 'lat' not in segmented_points[j-1] or 'lng' not in segmented_points[j-1]:
+                    point_before = (segmented_points[j-1]['data']['start']['lat'],
+                                    segmented_points[j-1]['data']['start']['lng'])
+                else:
+                    point_before = (segmented_points[j-1]['lat'],
+                                    segmented_points[j-1]['lng'])
+
+                if 'lat' not in segmented_points[j+1] or 'lng' not in segmented_points[j+1]:
+                    point_after = (segmented_points[j+1]['data']['end']['lat'],
+                                   segmented_points[j+1]['data']['end']['lng'])
+
                 current_point = (segmented_points[j]['lat'],
                                  segmented_points[j]['lng'])
-                point_before = (segmented_points[j-1]['lat'],
-                                segmented_points[j-1]['lng'])
                 point_after = (segmented_points[j+1]['lat'],
                                segmented_points[j+1]['lng'])
 
@@ -377,6 +392,10 @@ def get_position_geohash(point_lat, point_lng):
     # execute the raw sql, and there should only be one result... so get that.
     geohash_query = db.engine.execute(geohash_sql).fetchone()
 
+    if geohash_query is None:
+        # TODO: if the geohash isn't found, need to do something, maybe set it to
+        # another geohash type that's low crime...?
+        geohash_query = [0,'hfuf6ge', 0, 0.0]
     geohash_query_data = {
         'geohash': geohash_query[1],
         'total_crimes': geohash_query[2],
