@@ -5,14 +5,15 @@
     <link rel=stylesheet type=text/css href='{{ url_for('static',filename='style.css')}}'>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.2/jquery.min.js"></script>
     <script
-      src="https://maps.googleapis.com/maps/api/js?libraries=visualization">
+      src="https://maps.googleapis.com/maps/api/js?key=AIzaSyA8bE1w_yUuwqQasTvMEra9ZFOyJL-og1c&libraries=visualization&libraries=places">
     </script>
+
 </head>
 <body>
     <form action="\" id="route-me">
-        <input type="text" id="start-point" name="start_point" placeholder="start point">
-        <input type="text" id="end-point" name="end_point" placeholder="end point">
-        <button>Route Me</button>
+        <input type="text" id="start-point" class="controls" name="start_point" placeholder="start point">
+        <input type="text" id="end-point" class="controls" name="end_point" placeholder="end point">
+        <button id="route-button" class="controls">Route Me</button>
     </form>
     <div id="parse-user-data"></div>
     <div id="map"></div>
