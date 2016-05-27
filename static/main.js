@@ -121,7 +121,7 @@ var startDirections =  function(event){
     // get the text field values inputted by the user
     start = document.getElementById('start-point').value;
     end = document.getElementById('end-point').value;
-    
+
     // assemble a bunch of parameters for the json endpoint (in flask)
     var url = '/start-end.json?start=' + start + "&end=" + end;
     $.get(url, getUserData); // pass the values into the flask json endpoint
@@ -133,8 +133,11 @@ $('#route-me').submit(startDirections);
 // ------------------------------------
 
 function initMap() {
-    /* Initializes Google Maps API stuff */
+    var start = document.getElementById('start-point');
+    var end = document.getElementById('end-point');
+    var route_button = document.getElementById('route-button');
 
+    /* Initializes Google Maps API stuff */
     var geocoder = new google.maps.Geocoder();
     var address = "central park new york";
     var center_lat, center_lng = 0;
@@ -162,6 +165,18 @@ function initMap() {
             center: centerPoint,
             zoom: 12
         });
+
+        // push the input boxes to the map screen
+        map.controls[google.maps.ControlPosition.TOP_LEFT].push(start);
+        map.controls[google.maps.ControlPosition.TOP_LEFT].push(end);
+        // map.controls[google.maps.ControlPosition.TOP_LEFT].push(route_button);
+
+        // autocomplete stuff, this line generates the autocompletion
+        var start_autocomplete = new google.maps.places.Autocomplete(start);
+        start_autocomplete.bindTo('bounds', map);
+
+        var end_autocomplete = new google.maps.places.Autocomplete(end);
+        end_autocomplete.bindTo('bounds', map);
 
         // results is whatever is returned from the GET request, 
         // JSON in this case
