@@ -14,13 +14,6 @@ def index():
     """ runs app name mainspace """
     return render_template("main.html")
 
-
-# @app.route('/geojson_sample.json')
-# def geojson_sample():
-#     """ return a geojson """
-#     return jsonify(construct())
-
-
 @app.route('/start-end.json')
 def parse_user_start_end():
     """ takes the user's start and end points in address form
@@ -64,6 +57,8 @@ def directionsData():
     print "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@"
     # waypoints to be sent back, json.dumps because we're sending a list
     # return json.dumps(waypoints)
+    if waypoints is None:
+        waypoints = []
     return jsonify(waypoints)
 
 
