@@ -51,6 +51,9 @@ def address_to_lat_lng(user_points):
 
 
 def inspect_waypoints(latitude_longitude, bearing):
+    """ inspects to see if this is point is a potential waypoint by taking
+        a single point, a distance (constant), and a direction """
+
     # inspect potential waypoints
     # one degree of latitude is approximately 10^7 / 90 = 111,111 meters.
     # http://stackoverflow.com/questions/2187657/calculate-second-point-
@@ -108,7 +111,6 @@ def chunk_user_route(detail_of_trip):
     # the route based on the user's point A and point B
 
     # -------------- This section is for interpolation/splitting using shapely
-    print "length of route, legs", len(detail_of_trip['legs'])
     first = True  # to see if this is the start position for the entire route
     line_points = []  # stores all the points to the route based on dict passed
 
@@ -157,6 +159,7 @@ def chunk_user_route(detail_of_trip):
 
         segmented_points.append(geohash_data)  # append data on location
         distance_along_line += segment_size
+        print "crime index:", geohash_data['crime_index'], "geohash:", geohash_data['geohash'] 
 
     # also add the point A, point B latitude and longitude that the user gives
     # to the data that will be sent back to JS
@@ -169,7 +172,10 @@ def chunk_user_route(detail_of_trip):
         'lat': line_points[-1][0],
         'lng': line_points[-1][1]
         }
+    # call find_crime_areas here
 
+
+# def find_crime_areas(segmented_points):
     # once all of the interpolated points are loaded into segmented_points
     # loop through them again to find out which places are high crime.
     bad_neighborhood_crime_index = 0.2
@@ -184,7 +190,7 @@ def chunk_user_route(detail_of_trip):
             print "This is a bad neighborhood"
 
             # this is probably temporary, for display purposes
-            geohash_data['is_high_crime'] = True
+            segmented_points[j]['is_high_crime'] = True
 
             # some raw sql to get the center coords of geohash
             geohash_center_sql = "SELECT " + \
