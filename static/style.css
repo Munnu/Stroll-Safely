@@ -29,6 +29,11 @@ html, body {
         box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
       }
 button {
+    position: absolute;
+    top: 0;
+    left: 540px;
+
+    z-index: 10;
     display: inline-block;
     background-color: #f5f5f5;
     background-image: -webkit-linear-gradient(top,#f5f5f5,#f1f1f1);
