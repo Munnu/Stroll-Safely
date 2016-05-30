@@ -31,7 +31,7 @@ html, body {
 button {
     position: absolute;
     top: 0;
-    left: 540px;
+    left: 740px;
 
     z-index: 10;
     display: inline-block;
@@ -113,7 +113,7 @@ button#route-button:hover {
     margin-left: 12px;
     padding: 0 11px 0 13px;
     text-overflow: ellipsis;
-    width: 200px;
+    width: 300px;
 }
 
 #start-point:focus,
