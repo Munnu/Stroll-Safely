@@ -21,11 +21,11 @@ var getUserData = function(results) {
     // $('#parse-user-data').html("start: " + START.lat + " " + START.lng +
     //                           " end: " + END.lat + " " + END.lng);
 
-    // now that we have the start coords, load up calculateAndDisplayRoute
-    calculateAndDisplayRoute();
+    // now that we have the start coords, load up calculateAndDisplayOriginalRoute
+    calculateAndDisplayOriginalRoute();
 };
 
-function calculateAndDisplayRoute() {
+function calculateAndDisplayOriginalRoute() {
 
       // try doing this: 40.673301, -73.780351
       // create two points: A and B
@@ -45,6 +45,13 @@ function calculateAndDisplayRoute() {
           waypoints: [] // empty waypoints for now: non-modified route
       }, function(response, status) {
         if (status == google.maps.DirectionsStatus.OK) {
+            directionsDisplay.setOptions({
+              polylineOptions: {
+                strokeColor: "red",
+                strokeOpacity: 0.5,
+                strokeWeight: 5
+              }
+            });
             directionsDisplay.setDirections(response);
             // sends python this same exact response's so that I know the legs 
             // to my trip and can check which grids does a leg pass through.
@@ -56,7 +63,14 @@ function calculateAndDisplayRoute() {
             console.log("response['routes']", response['routes']);
 
             // python stuff here
-            sendDirectionsResult(response['routes']);
+            window.setTimeout(
+              function() {
+                sendDirectionsResult(response['routes']);
+              }, 1000
+            ); // create a delay here so we can see the before and after route
+
+
+
         } else {
             window.alert('Directions request failed due to ' + status);
         }
@@ -80,6 +94,7 @@ var showOptimalRoute = function(response) {
 
     // we do this section again because this is the 'after' effect, the first
     // time got the unmodified route, this is now the modified via python
+
     selectedMode = 'WALKING';
     directionsService.route({
         origin: response['data']['start'],  // Point A
@@ -88,6 +103,13 @@ var showOptimalRoute = function(response) {
         waypoints: response['data']['waypoints']
     }, function(response, status) {
       if (status == google.maps.DirectionsStatus.OK) {
+          directionsDisplay.setOptions({
+              polylineOptions: {
+                strokeColor: "#4D90FE",
+                strokeOpacity: 0.8,
+                strokeWeight: 5
+              }
+          });
           directionsDisplay.setDirections(response);
       } else {
           window.alert('Directions request failed due to ' + status);
@@ -116,7 +138,7 @@ var startDirections =  function(event){
     /* gets the user's input and sends it over to the flask json endpoint */
 
     event.preventDefault(); // need this to prevent GET on form submit refresh
-    alert("Inside of startDirections");
+    //alert("Inside of startDirections");
 
     // get the text field values inputted by the user
     start = document.getElementById('start-point').value;
