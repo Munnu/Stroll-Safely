@@ -25,6 +25,35 @@ var getUserData = function(results) {
     calculateAndDisplayOriginalRoute();
 };
 
+function crimesAroundArea(results) {
+      console.log("This is crimesAroundArea results", results);
+
+      // results is whatever is returned from the GET request, 
+      // JSON in this case
+      var heatmapData = [];
+      var crimeData = [];
+      var crimes_found = results.crimes; // a list of dictionaries
+
+      // Loop through all of the crimes in the json
+      for (var i = 0; i < crimes_found.length; i++) {
+          // set a new latLng based on json items
+          var latLng = new google.maps.LatLng(
+                                crimes_found[i].latitude,
+                                crimes_found[i].longitude);
+          var totalCrimes = crimes_found[i].total_crimes;
+
+          crimeData.push(totalCrimes);
+          heatmapData.push(latLng);
+      } // end for
+      var heatmap = new google.maps.visualization.HeatmapLayer({
+        data: heatmapData,
+        dissipating: true,
+        radius: 5,
+        weight: 10,
+        map: map
+    }); //end heatmap declaration
+}
+
 function calculateAndDisplayOriginalRoute() {
 
       // try doing this: 40.673301, -73.780351
@@ -68,16 +97,10 @@ function calculateAndDisplayOriginalRoute() {
                 sendDirectionsResult(response['routes']);
               }, 1000
             ); // create a delay here so we can see the before and after route
-
-
-
         } else {
             window.alert('Directions request failed due to ' + status);
         }
     });
-
-
-
 }
 
 
@@ -115,7 +138,6 @@ var showOptimalRoute = function(response) {
           window.alert('Directions request failed due to ' + status);
       }
   });
-
 };
 
 var sendDirectionsResult = function(returnedDirectionsData) {
@@ -132,6 +154,13 @@ var sendDirectionsResult = function(returnedDirectionsData) {
     // this next step is to pass the values into the flask json endpoint
     // not passing in the data parameter because that's coming in as an argument
     $.get(url, success=showOptimalRoute); // success function is needed
+
+    // for an added bonus, let's also get all the crimes in the area
+    // assemble a bunch of parameters for the json endpoint (in flask)
+    var crimesUrl = '/crimes.json?start_lat=' + START.lat + "&start_lng=" +
+                    START.lng + "&end_lat=" + END.lat + "&end_lng=" + END.lng;
+
+    $.get(crimesUrl, crimesAroundArea); // pass the values into the flask json endpoint
 };
 
 var startDirections =  function(event){
@@ -200,28 +229,29 @@ function initMap() {
         var end_autocomplete = new google.maps.places.Autocomplete(end);
         end_autocomplete.bindTo('bounds', map);
 
-        // results is whatever is returned from the GET request, 
-        // JSON in this case
-        $.get('/crimes.json', function(results) {
-              var heatmapData = [];
-              var crimes_found = results.crimes; // a list of dictionaries
+        // // results is whatever is returned from the GET request, 
+        // // JSON in this case
+        // $.get('/crimes.json', function(results) {
+        //       var heatmapData = [];
+        //       var crimes_found = results.crimes; // a list of dictionaries
 
-              // Loop through all of the crimes in the json
-              for (var i = 0; i < crimes_found.length; i++) {
-                  // set a new latLng based on json items
-                  var latLng = new google.maps.LatLng(
-                                        crimes_found[i].latitude,
-                                        crimes_found[i].longitude);
+        //       // Loop through all of the crimes in the json
+        //       for (var i = 0; i < crimes_found.length; i++) {
+        //           // set a new latLng based on json items
+        //           var latLng = new google.maps.LatLng(
+        //                                 crimes_found[i].latitude,
+        //                                 crimes_found[i].longitude);
 
-                  heatmapData.push(latLng);
-              } // end for
-              var heatmap = new google.maps.visualization.HeatmapLayer({
-                data: heatmapData,
-                dissipating: true,
-                radius: 20,
-                map: map
-            }); //end heatmap declaration
-        }); // end $.get
+        //           heatmapData.push(latLng);
+        //       } // end for
+        //       var heatmap = new google.maps.visualization.HeatmapLayer({
+        //         data: heatmapData,
+        //         dissipating: true,
+        //         radius: 5,
+        //         weight: 0.5,
+        //         map: map
+        //     }); //end heatmap declaration
+        // }); // end $.get
 
         // display the map
         directionsDisplay.setMap(map);

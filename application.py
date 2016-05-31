@@ -4,6 +4,7 @@ from model import Crime_Data_NYC, NYC_Crimes_by_Geohash, connect_to_db
 #from model import init_app
 
 from middle import get_twenty, address_to_lat_lng, chunk_user_route
+from middle import total_crimes_in_bounds
 import json
 
 app = Flask(__name__)
@@ -70,7 +71,25 @@ def crimes():
     #         {'latitude': 40.57948579, 'longitude': -73.99844033},
     #         {'latitude': 40.83069115, 'longitude': -73.95586724}
     #         ]}
-    crimes_coords = get_twenty()
+    # crimes_coords = get_twenty()
+    # return jsonify(crimes_coords)
+    start_lat = request.args.get('start_lat')
+    start_lng = request.args.get('start_lng')
+
+    end_lat = request.args.get('end_lat')
+    end_lng = request.args.get('end_lng')
+
+    print "\n\n\n\nThis is request.args stuff", start_lat, start_lng, end_lat, end_lng
+    print "types of them", type(start_lat), type(float(start_lng)), type(end_lat), type(end_lng)
+
+    start_end_dict = {'point_a': {
+                            'lat': float(start_lat),
+                            'lng': float(start_lng)},
+                     'point_b': {
+                            'lat': float(end_lat),
+                            'lng': float(end_lng)}}
+
+    crimes_coords = total_crimes_in_bounds(start_end_dict)
     return jsonify(crimes_coords)
 
 if __name__ == '__main__':

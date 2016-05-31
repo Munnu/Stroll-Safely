@@ -47,6 +47,7 @@ def address_to_lat_lng(user_points):
     user_coords['point_a'] = point_a_geo_results['geometry']['location']
     user_coords['point_b'] = point_b_geo_results['geometry']['location']
 
+    bounds = total_crimes_in_bounds(user_coords)
     return user_coords
 
 
@@ -398,6 +399,65 @@ def get_position_geohash(point_lat, point_lng):
     # index greater than or equal to the 5th item is considered dangerous
 
     return geohash_query_data
+
+
+def total_crimes_in_bounds(user_coords):
+    """ generates the bounds for safety analysis around what will be the
+        user defined route. The heatmap data will use this to display crimes.
+    """
+
+    crimes_coords = {'crimes': []}
+
+    # takes in user_coords point a and point b
+    # in order to determine top left and bottom right coordinates.
+    point_a = user_coords['point_a']
+    point_b = user_coords['point_b']
+
+    # compare latitude to see what's the top coord, tupleize
+    # add 0.005 to latitude, and subtract 0.02 to longitude
+    top_left_coord = {'lat': max(point_a['lat'], point_b['lat']) + 0.005,
+                      'lng': min(point_a['lng'], point_b['lng']) - 0.02}
+
+    # subtract 0.005 to latitude, and add 0.02 to longitude
+    bottom_right_coord = {'lat': min(point_a['lat'], point_b['lat']) - 0.005,
+                          'lng': max(point_a['lng'], point_b['lng']) + 0.02}
+
+    # {'lat': 40.765385, 'lng': -74.00119529999999}
+    # {'lat': 40.748947199999996, 'lng': -73.9566736}
+    print "this is the top_left_coord and bottom_right_coord", \
+                top_left_coord, bottom_right_coord
+
+    # once the bounds are generated, we will want to do a query for all of the
+    # geohashes that are within those bounds. Let's do that now.
+    # some raw sql to get the center coords of geohash
+    geohash_in_bounds_sql = "SELECT *, " + \
+        "ST_AsText(ST_PointFromGeoHash(geohash)) AS lat_lng " + \
+        "FROM nyc_crimes_by_geohash " + \
+        "WHERE ST_Contains(" + \
+        "ST_MakeBox2D(" + \
+        "ST_Point(%f, %f), ST_Point(%f, %f)), ST_PointFromGeoHash(geohash));" \
+        % (top_left_coord['lat'], top_left_coord['lng'],
+            bottom_right_coord['lat'], bottom_right_coord['lng'])
+    # execute the raw sql, there should be many
+    geohash_in_bounds_query = db.engine.execute(geohash_in_bounds_sql).fetchall()
+
+    print "This is geohash_in_bounds_query", geohash_in_bounds_query
+
+    for row in geohash_in_bounds_query:
+        print "This is row", row
+        # strip the lat, lngs before putting them in
+        # some string splitting to extract data
+        location = row[4].strip("POINT(").rstrip(")").split()
+        latitude = location[0]
+        longitude = location[1]
+
+        format_loc_dict = {'latitude': latitude, 'longitude': longitude,
+                           'total_crimes': row[2]}
+
+        # append to crimes_coords inner list
+        crimes_coords['crimes'].append(format_loc_dict)
+
+    return crimes_coords
 
 
 def get_twenty():
