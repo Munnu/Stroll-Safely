@@ -229,30 +229,6 @@ function initMap() {
         var end_autocomplete = new google.maps.places.Autocomplete(end);
         end_autocomplete.bindTo('bounds', map);
 
-        // // results is whatever is returned from the GET request, 
-        // // JSON in this case
-        // $.get('/crimes.json', function(results) {
-        //       var heatmapData = [];
-        //       var crimes_found = results.crimes; // a list of dictionaries
-
-        //       // Loop through all of the crimes in the json
-        //       for (var i = 0; i < crimes_found.length; i++) {
-        //           // set a new latLng based on json items
-        //           var latLng = new google.maps.LatLng(
-        //                                 crimes_found[i].latitude,
-        //                                 crimes_found[i].longitude);
-
-        //           heatmapData.push(latLng);
-        //       } // end for
-        //       var heatmap = new google.maps.visualization.HeatmapLayer({
-        //         data: heatmapData,
-        //         dissipating: true,
-        //         radius: 5,
-        //         weight: 0.5,
-        //         map: map
-        //     }); //end heatmap declaration
-        // }); // end $.get
-
         // display the map
         directionsDisplay.setMap(map);
     }); // end geocoder
