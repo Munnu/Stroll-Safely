@@ -176,3 +176,16 @@ SELECT geohash, ST_AsText(ST_PointFromGeoHash(geohash)) FROM nyc_crimes_by_geoha
  
 #May 26th Log:
 I haven't added anything to my diary in days because I have been extremely focused on making sure I reach my MVP. Today I've reached it, though I need to tweak it a little and add some extra code. So since I first started doing this project I couldn't get my API key to work. I found out the reason why the API key doesn't work is because one of the things that needs to be activated is the Google JavaScript API.
+
+#May 30th Log:
+
+For querying for all geohashes that fit within bounding box example:
+
+```
+SELECT *, 
+ST_AsText(ST_PointFromGeoHash(geohash)) AS lat_lng
+FROM nyc_crimes_by_geohash
+WHERE ST_Contains(
+ST_MakeBox2D(
+ST_Point(40.765385, -74.00119529999999), ST_Point(40.748947199999996, -73.9566736)), ST_PointFromGeoHash(geohash));
+```
