@@ -1,6 +1,7 @@
 var map;
 var directionsDisplay;
 var directionsService;
+var heatmap;
 
 var START = {};
 var END = {};
@@ -21,12 +22,22 @@ var getUserData = function(results) {
     // $('#parse-user-data').html("start: " + START.lat + " " + START.lng +
     //                           " end: " + END.lat + " " + END.lng);
 
+    // for an added bonus, let's also get all the crimes in the area
+    // assemble a bunch of parameters for the json endpoint (in flask)
+    var crimesUrl = '/crimes.json?start_lat=' + START.lat + "&start_lng=" +
+                    START.lng + "&end_lat=" + END.lat + "&end_lng=" + END.lng;
+
+    $.get(crimesUrl, crimesAroundArea); // pass the values into the flask json endpoint
+
     // now that we have the start coords, load up calculateAndDisplayOriginalRoute
     calculateAndDisplayOriginalRoute();
 };
 
 function crimesAroundArea(results) {
       console.log("This is crimesAroundArea results", results);
+
+      // wipe away the heatmap before loading a new one
+      heatmap.setMap(null);
 
       // results is whatever is returned from the GET request, 
       // JSON in this case
@@ -45,17 +56,18 @@ function crimesAroundArea(results) {
 
           heatmapData.push(heatmapZip);
       } // end for
-      var heatmap = new google.maps.visualization.HeatmapLayer({
+
+      heatmap.setOptions({
         data: heatmapData,
         dissipating: true,
         radius: 20,
         opacity: 1,
         map: map
     }); //end heatmap declaration
+
 }
 
 function calculateAndDisplayOriginalRoute() {
-
       // try doing this: 40.673301, -73.780351
       // create two points: A and B
       var latLangStart = new google.maps.LatLng(START.lat, START.lng);
@@ -154,13 +166,6 @@ var sendDirectionsResult = function(returnedDirectionsData) {
     // this next step is to pass the values into the flask json endpoint
     // not passing in the data parameter because that's coming in as an argument
     $.get(url, success=showOptimalRoute); // success function is needed
-
-    // for an added bonus, let's also get all the crimes in the area
-    // assemble a bunch of parameters for the json endpoint (in flask)
-    var crimesUrl = '/crimes.json?start_lat=' + START.lat + "&start_lng=" +
-                    START.lng + "&end_lat=" + END.lat + "&end_lng=" + END.lng;
-
-    $.get(crimesUrl, crimesAroundArea); // pass the values into the flask json endpoint
 };
 
 var startDirections =  function(event){
@@ -202,6 +207,9 @@ function initMap() {
         // adding directions display and service variables
          directionsDisplay = new google.maps.DirectionsRenderer();
          directionsService = new google.maps.DirectionsService();
+
+        // initialize heatmap var as heatmapLayer
+        heatmap = new google.maps.visualization.HeatmapLayer();
 
         // latitude and longitude stuff
         var centerPoint = new google.maps.LatLng(center_lat, center_lng);
