@@ -31,7 +31,6 @@ function crimesAroundArea(results) {
       // results is whatever is returned from the GET request, 
       // JSON in this case
       var heatmapData = [];
-      var crimeData = [];
       var crimes_found = results.crimes; // a list of dictionaries
 
       // Loop through all of the crimes in the json
@@ -42,14 +41,15 @@ function crimesAroundArea(results) {
                                 crimes_found[i].longitude);
           var totalCrimes = crimes_found[i].total_crimes;
 
-          crimeData.push(totalCrimes);
-          heatmapData.push(latLng);
+          var heatmapZip = {location: latLng, weight: totalCrimes};
+
+          heatmapData.push(heatmapZip);
       } // end for
       var heatmap = new google.maps.visualization.HeatmapLayer({
         data: heatmapData,
         dissipating: true,
-        radius: 5,
-        weight: 10,
+        radius: 20,
+        opacity: 1,
         map: map
     }); //end heatmap declaration
 }
