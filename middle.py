@@ -160,7 +160,7 @@ def chunk_user_route(detail_of_trip):
 
         segmented_points.append(geohash_data)  # append data on location
         distance_along_line += segment_size
-        print "crime index:", geohash_data['crime_index'], "geohash:", geohash_data['geohash'] 
+        print "crime index:", geohash_data['crime_index'], "geohash:", geohash_data['geohash']
 
     # also add the point A, point B latitude and longitude that the user gives
     # to the data that will be sent back to JS
