@@ -129,6 +129,10 @@ def chunk_user_route(detail_of_trip):
     # Now load those points into a geometry, here shapely's LineString type.
     route_line = LineString(line_points)
 
+# ============ End of get gmap trip legs section
+# ---------------------------------------------------------------------------
+# ============= Begin Interpolate/Break into 1/10 segments
+
     # break up the line into 1/10 segments, iterate. We are ignoring the 0th
     # element as that's the start position and that's already stored
     segmented_points = []  # creating an empty list to store these points
@@ -173,8 +177,10 @@ def chunk_user_route(detail_of_trip):
         'lat': line_points[-1][0],
         'lng': line_points[-1][1]
         }
-    # call find_crime_areas here
 
+# ============ End of Interpolate/Break into 1/10 segments
+# ---------------------------------------------------------------------------
+# ============= Begin Find bad neighborhood + get geohash center point, look at steps before and after
 
 # def find_crime_areas(segmented_points):
     # once all of the interpolated points are loaded into segmented_points
@@ -242,6 +248,12 @@ def chunk_user_route(detail_of_trip):
             # and current point location
             delta_lat_after_current = point_after[0] - current_point[0]
             delta_lng_after_current = point_after[0] - current_point[1]
+
+# ============= End of Find bad neighborhood + get geohash center point, look at steps before and after
+# ---------------------------------------------------------------------------
+# ============= Begin check total delta x,y's and what directions to try adding waypoints
+
+
 
             # check to see if the delta x's in both directions are longer
             # than the delta y's in both directions
@@ -458,29 +470,6 @@ def total_crimes_in_bounds(user_coords):
         crimes_coords['crimes'].append(format_loc_dict)
 
     return crimes_coords
-
-
-def get_twenty():
-    """ Test to see if I could get a list of 20 items from db """
-
-    twenty_entries = Crime_Data_NYC.query.limit(20).all()
-
-    crimes_coords = {'crimes': []}
-
-    # print "\n\n\nAAAAAAAAAAAAAAAAAA!!!!!", twenty_entries[0], "\n\n\n\n\n"
-    for entry in twenty_entries:
-        # get the location in string format of "(0, 0)"
-        # and other nasty string to float conversion stuff here
-        location_lat = entry.latitude
-        location_lng = entry.longitude
-
-        format_loc_dict = {'latitude': location_lat, 'longitude': location_lng}
-
-        # append to crimes_coords inner list
-        crimes_coords['crimes'].append(format_loc_dict)
-
-    return crimes_coords
-
 
 # if __name__ == "__main__":
 #     connect_to_db(app)
