@@ -6,6 +6,23 @@ from geoalchemy2.types import Geometry
 db = SQLAlchemy()
 
 
+class NYC_Crimes_by_Geohash(db.Model):
+    """ Table that holds the geohash data and the total number of crimes
+        per geohash and the crime index based on that geohash """
+
+    __tablename__ = "nyc_crimes_by_geohash"
+
+    # I really shouldn't have an id, my geohash can be my id.
+    id = db.Column(db.Integer, autoincrement=True, primary_key=True)
+    geohash = db.Column(db.String)
+    total_crimes = db.Column(db.Integer)
+    crime_index = db.Column(db.Float)
+
+    # define relationship to NYC_Crimes_by_Geohash
+    crime_data_nyc = db.relationship('Crime_Data_NYC',
+                                     backref=db.backref("nyc_crimes_by_geohash"))
+
+
 class Crime_Data_NYC(db.Model):
     """ Crime data from NYC Open Data """
 
@@ -29,20 +46,16 @@ class Crime_Data_NYC(db.Model):
     jurisdiction = db.Column(db.String)
     xcoordinate = db.Column(db.Integer)
     ycoordinate = db.Column(db.Integer)
-    location = db.Column(db.String)
-    # location = db.Column(Geometry(geometry_type='POINT'))
+    # location = db.Column(db.String)
+    location = db.Column(Geometry(geometry_type='POINT'))
     latitude = db.Column(db.Float)
     longitude = db.Column(db.Float)
-    # location = db.Column(Geometry(geometry_type='POINT'))
-    # location = db.Column(db.Integer)
-    # location = db.Column(Geometry(geometry_type='POINT', srid=4326))
+    geohash = db.Column(db.String, db.ForeignKey(NYC_Crimes_by_Geohash.geohash))
 
 
 ####################################################
 # Helper functions
 ####################################################
-
-
 def init_app():
     # So that we can use Flask-SQLAlchemy, we'll make a Flask app
     from flask import Flask
@@ -52,7 +65,7 @@ def init_app():
     print "Connected to DB."
 
 
-def connect_to_db(app, db_uri='postgres:///crime_data'):
+def connect_to_db(app, db_uri='postgres:///crime_data_gis'):
     """Connect the database to our Flask app."""
 
     # Configure to use our database

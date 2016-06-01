@@ -1,7 +1,8 @@
 import os
 from unittest import TestCase
 # from model import Employee, Department, connect_to_db, db, example_data
-from model import Crime_Data_NYC, connect_to_db, db, create_engine
+from model import Crime_Data_NYC, NYC_Crimes_by_Geohash
+from model import connect_to_db, db, create_engine
 from application import app
 import application
 

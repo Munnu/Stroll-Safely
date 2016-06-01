@@ -1,9 +1,11 @@
 from flask import Flask, render_template, url_for, jsonify, request
 from flask_restful import marshal_with, fields
-from model import Crime_Data_NYC, connect_to_db
+from model import Crime_Data_NYC, NYC_Crimes_by_Geohash, connect_to_db
 #from model import init_app
 
-from middle import get_twenty, address_to_lat_lng
+from middle import get_twenty, address_to_lat_lng, chunk_user_route
+from middle import total_crimes_in_bounds
+import json
 
 app = Flask(__name__)
 
@@ -12,13 +14,6 @@ app = Flask(__name__)
 def index():
     """ runs app name mainspace """
     return render_template("main.html")
-
-
-@app.route('/geojson_sample.json')
-def geojson_sample():
-    """ return a geojson """
-    return jsonify(construct())
-
 
 @app.route('/start-end.json')
 def parse_user_start_end():
@@ -38,15 +33,35 @@ def parse_user_start_end():
     return jsonify(lat_lng_dict)
 
 
-@app.route('/directions-data.json', methods=['POST'])
+@app.route('/directions-data.json', methods=['GET'])
 def directionsData():
     """ This holds all of the leg information pertaining to the route
-        and all of this other fancy stuff """
+        and all of this other fancy stuff  and returns back the waypoint(s)
+        if necessary. """
 
-    directions_data = request.get_json()
-    print "This is directions_data", directions_data
+    directions_data = request.args.get('data')
+    directions_data = json.loads(directions_data)
+    # print "+++++++++++++++++++++++++++++++++++++++++++++"
+    # print "This is directions_data type", type(directions_data)
+    # print "This is directions_data", json.dumps(directions_data, indent=2)
+    # print "+++++++++++++++++++++++++++++++++++++++++++++"
 
-    return directions_data
+
+    # call a function in middle.py that takes the directions and manipulates
+    waypoints = chunk_user_route(directions_data)
+
+    print "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@"
+    print "THIS IS WAYPOINTS", waypoints  # currently is a list of locations [{location: ...}, {location: ...}]
+    print "This is directions_data type", type(waypoints)  # type list
+    print "This is directions_data, json.dumps type", type(json.dumps(waypoints))  # type string
+    print "Is this a string type for real?", isinstance(json.dumps(waypoints), str)  # true
+    print "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@"
+    # waypoints to be sent back, json.dumps because we're sending a list
+    # return json.dumps(waypoints)
+    if waypoints is None:
+        waypoints = []
+    return jsonify(waypoints)
+
 
 @app.route('/crimes.json')
 def crimes():
@@ -56,7 +71,25 @@ def crimes():
     #         {'latitude': 40.57948579, 'longitude': -73.99844033},
     #         {'latitude': 40.83069115, 'longitude': -73.95586724}
     #         ]}
-    crimes_coords = get_twenty()
+    # crimes_coords = get_twenty()
+    # return jsonify(crimes_coords)
+    start_lat = request.args.get('start_lat')
+    start_lng = request.args.get('start_lng')
+
+    end_lat = request.args.get('end_lat')
+    end_lng = request.args.get('end_lng')
+
+    print "\n\n\n\nThis is request.args stuff", start_lat, start_lng, end_lat, end_lng
+    print "types of them", type(start_lat), type(float(start_lng)), type(end_lat), type(end_lng)
+
+    start_end_dict = {'point_a': {
+                            'lat': float(start_lat),
+                            'lng': float(start_lng)},
+                     'point_b': {
+                            'lat': float(end_lat),
+                            'lng': float(end_lng)}}
+
+    crimes_coords = total_crimes_in_bounds(start_end_dict)
     return jsonify(crimes_coords)
 
 if __name__ == '__main__':
