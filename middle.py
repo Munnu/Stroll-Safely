@@ -10,7 +10,6 @@ from model import Crime_Data_NYC, NYC_Crimes_by_Geohash
 from model import connect_to_db, db, init_app
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import and_, or_
-#from application import app  # causes circular reference, nevermind
 from gmaps import Directions, Geocoding
 from shapely.geometry import LineString
 
@@ -51,9 +50,12 @@ def address_to_lat_lng(user_points):
     return user_coords
 
 
-def inspect_waypoints(latitude_longitude, bearing):
+def inspect_waypoints(current_point, direction):
     """ inspects to see if this is point is a potential waypoint by taking
-        a single point, a distance (constant), and a direction """
+    a single point, a distance (constant), and a direction """
+
+    # check if longwise, latwise, all for direction. direction should be a str
+    # direction will indicate bearing.
 
     # inspect potential waypoints
     # one degree of latitude is approximately 10^7 / 90 = 111,111 meters.
@@ -62,16 +64,75 @@ def inspect_waypoints(latitude_longitude, bearing):
     # one degree of latitude is approximately 10^7 / 90 = 111,111 meters
     # http://stackoverflow.com/questions/13836416/geohash-and-max-distance
     distance = 118  # meters
-    latitude = latitude_longitude[0]
-    longitude = latitude_longitude[1]
 
-    east_displacement = distance * sin(radians(bearing)) / 111111
-    north_displacement = distance * cos(radians(bearing)) / 111111
+    # get the latitude and longitude of the point we will be inspecting
+    latitude = current_point[0]
+    longitude = current_point[1]
 
-    waypoint_latitude = latitude + north_displacement
-    waypoint_longitude = longitude + east_displacement
+    potential_waypoints = []  # an empty list to store
 
-    return waypoint_latitude, waypoint_longitude
+    if direction == 'latwise' or direction == 'all':
+        # then we know our bearing should be 0, 180 for N, S
+        east_displacement_n = distance * sin(radians(0)) / 111111
+        north_displacement_n = distance * cos(radians(0)) / 111111
+
+        east_displacement_s = distance * sin(radians(180)) / 111111
+        north_displacement_s = distance * sin(radians(180)) / 111111
+
+        # calculate the total displacement for N, S respectively
+        waypoint_latitude_n = latitude + north_displacement_n
+        waypoint_longitude_n = longitude + east_displacement_n
+
+        waypoint_latitude_s = latitude + north_displacement_s
+        waypoint_longitude_s = longitude + east_displacement_s
+
+        potential_waypoints.append((waypoint_latitude_n, waypoint_longitude_n))
+        potential_waypoints.append((waypoint_latitude_s, waypoint_longitude_s))
+
+    if direction == 'lngwise' or direction == 'all':
+        # then we know our bearing should be 90, 270 for E, W
+        east_displacement_e = distance * sin(radians(90)) / 111111
+        north_displacement_e = distance * cos(radians(90)) / 111111
+
+        east_displacement_w = distance * sin(radians(270)) / 111111
+        north_displacement_w = distance * sin(radians(270)) / 111111
+
+        # calculate the total displacement for N, S respectively
+        waypoint_latitude_e = latitude + north_displacement_e
+        waypoint_longitude_e = longitude + east_displacement_e
+
+        waypoint_latitude_w = latitude + north_displacement_w
+        waypoint_longitude_w = longitude + east_displacement_w
+
+        potential_waypoints.append((waypoint_latitude_e, waypoint_longitude_e))
+        potential_waypoints.append((waypoint_latitude_w, waypoint_longitude_w))
+
+    # return something like [(late, lnge), (latw, lngw)]
+    print "this is potential_waypoints list", potential_waypoints
+    return potential_waypoints
+
+
+# def inspect_waypoints(latitude_longitude, bearing):
+#     """ inspects to see if this is point is a potential waypoint by taking
+#         a single point, a distance (constant), and a direction """
+
+#     # inspect potential waypoints
+#     # one degree of latitude is approximately 10^7 / 90 = 111,111 meters.
+#     # http://stackoverflow.com/questions/2187657/calculate-second-point-
+#     # knowing-the-starting-point-and-distance
+#     # one degree of latitude is approximately 10^7 / 90 = 111,111 meters
+#     # http://stackoverflow.com/questions/13836416/geohash-and-max-distance
+#     distance = 118  # meters
+#     latitude = latitude_longitude[0]
+#     longitude = latitude_longitude[1]
+
+#     east_displacement = distance * sin(radians(bearing)) / 111111
+#     north_displacement = distance * cos(radians(bearing)) / 111111
+
+#     waypoint_latitude = latitude + north_displacement
+#     waypoint_longitude = longitude + east_displacement
+
+#     return waypoint_latitude, waypoint_longitude
 
 
 def generate_waypoint(lowest_crime_index, waypoint_dict, segmented_points, waypoint_point):
@@ -264,11 +325,14 @@ def chunk_user_route(detail_of_trip):
                 # in the longitude direction
 
                 # don't forget to generate waypoints
-                waypoint_e = inspect_waypoints(current_point, 90)
-                waypoint_w = inspect_waypoints(current_point, 270)
+                waypoint_e_w = inspect_waypoints(current_point, "lngwise")
 
-                print "waypoint_data_e", waypoint_e
-                print "waypoint_data_w", waypoint_w
+                # retreive the latitude, longitude coordinates from the ret
+                waypoint_e = waypoint_e_w[0]
+                waypoint_w = waypoint_e_w[1]
+
+                print "waypoint_data_e", waypoint_e, type(waypoint_e)
+                print "waypoint_data_w", waypoint_w, type(waypoint_w)
 
                 # store the waypoints retreived and compare their crime_index
                 waypoint_e_geohash_data = get_position_geohash(
@@ -293,10 +357,16 @@ def chunk_user_route(detail_of_trip):
                 print "inside elif, checks the north and south creation"
                 # the longitudes are longer than the latitudes, get waypoints
                 # in the latitude direction
-                waypoint_n = inspect_waypoints(current_point, 0)
-                waypoint_s = inspect_waypoints(current_point, 180)
-                print "waypoint_n", waypoint_n
-                print "waypoint_s", waypoint_s
+
+                # don't forget to generate waypoints
+                waypoint_n_s = inspect_waypoints(current_point, "latwise")
+
+                # retreive the latitude, longitude coordinates from the ret
+                waypoint_n = waypoint_n_s[0]
+                waypoint_s = waypoint_n_s[1]
+
+                print "waypoint_n", waypoint_n, type(waypoint_n)
+                print "waypoint_s", waypoint_s, type(waypoint_s)
 
                 # store the waypoints retreived and compare their crime_index
                 waypoint_n_geohash_data = get_position_geohash(
@@ -330,16 +400,23 @@ def chunk_user_route(detail_of_trip):
                                   waypoint_s)
             else:
                 print "inside else"
-                # get waypoints in all directions
-                waypoint_n = inspect_waypoints(current_point, 0)
-                waypoint_s = inspect_waypoints(current_point, 180)
-                print "waypoint_n", waypoint_n
-                print "waypoint_s", waypoint_s
 
-                waypoint_e = inspect_waypoints(current_point, 90)
-                waypoint_w = inspect_waypoints(current_point, 270)
-                print "waypoint_e", waypoint_e
-                print "waypoint_data_w", waypoint_w
+                # don't forget to generate waypoints
+                waypoint_all = inspect_waypoints(current_point, "all")
+
+                # retreive the latitude, longitude coordinates from the ret
+                waypoint_n = waypoint_all[0]
+                waypoint_s = waypoint_all[1]
+
+                print "waypoint_n", waypoint_n, type(waypoint_n)
+                print "waypoint_s", waypoint_s, type(waypoint_s)
+
+                # retreive the latitude, longitude coordinates from the ret
+                waypoint_e = waypoint_all[3]
+                waypoint_w = waypoint_all[4]
+
+                print "waypoint_e", waypoint_e, type(waypoint_e)
+                print "waypoint_w", waypoint_w, type(waypoint_w)
 
                 # store the waypoints retreived and compare their crime_index
                 waypoint_n_geohash_data = get_position_geohash(
@@ -470,12 +547,3 @@ def total_crimes_in_bounds(user_coords):
         crimes_coords['crimes'].append(format_loc_dict)
 
     return crimes_coords
-
-# if __name__ == "__main__":
-#     connect_to_db(app)
-
-#     # In case tables haven't been created, create them
-#     db.create_all()
-
-#     # Import different types of data
-#     get_twenty()
