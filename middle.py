@@ -62,16 +62,37 @@ def execute_waypoint_sequence(detail_of_trip):
     segmented_points = interpolate_points(sliced_route, line_points)
     waypoints = find_crime_areas(segmented_points)
 
-    # current_point = delta_and_current_points[0]
-    # delta_lat_lng_before_after = delta_and_current_points[1:]
-
-    # waypoints = check_directions_find_waypoint(current_point,
-    #                                            delta_lat_lng_before_after,
-    #                                            segmented_points)
-
     # print "segmented_points", json.dumps(segmented_points, indent=2)
     print "\n\n\n\n"  # compensating for the giant GET request
     return waypoints
+
+
+def distance_to_coords_formula(latitude, longitude, bearing1, bearing2):
+    """ math formula for calculating the lat, lng based on
+        distance and bearing """
+
+    # one degree of latitude is approximately 10^7 / 90 = 111,111 meters.
+    # http://stackoverflow.com/questions/2187657/calculate-second-point-
+    # knowing-the-starting-point-and-distance
+    # one degree of latitude is approximately 10^7 / 90 = 111,111 meters
+    # http://stackoverflow.com/questions/13836416/geohash-and-max-distance
+    distance = 118  # meters
+
+    east_displacement_a = distance * sin(radians(bearing1)) / 111111
+    north_displacement_a = distance * cos(radians(bearing1)) / 111111
+
+    east_displacement_b = distance * sin(radians(bearing2)) / 111111
+    north_displacement_b = distance * sin(radians(bearing2)) / 111111
+
+    # calculate the total displacement for N, S respectively
+    waypoint_latitude_a = latitude + north_displacement_a
+    waypoint_longitude_a = longitude + east_displacement_a
+
+    waypoint_latitude_b = latitude + north_displacement_b
+    waypoint_longitude_b = longitude + east_displacement_b
+
+    return [(waypoint_latitude_a, waypoint_longitude_a),
+            (waypoint_latitude_b, waypoint_longitude_b)]
 
 
 def inspect_waypoints(current_point, direction):
@@ -81,14 +102,6 @@ def inspect_waypoints(current_point, direction):
     # check if longwise, latwise, all for direction. direction should be a str
     # direction will indicate bearing.
 
-    # inspect potential waypoints
-    # one degree of latitude is approximately 10^7 / 90 = 111,111 meters.
-    # http://stackoverflow.com/questions/2187657/calculate-second-point-
-    # knowing-the-starting-point-and-distance
-    # one degree of latitude is approximately 10^7 / 90 = 111,111 meters
-    # http://stackoverflow.com/questions/13836416/geohash-and-max-distance
-    distance = 118  # meters
-
     # get the latitude and longitude of the point we will be inspecting
     latitude = current_point[0]
     longitude = current_point[1]
@@ -97,39 +110,15 @@ def inspect_waypoints(current_point, direction):
 
     if direction == 'latwise' or direction == 'all':
         # then we know our bearing should be 0, 180 for N, S
-        east_displacement_n = distance * sin(radians(0)) / 111111
-        north_displacement_n = distance * cos(radians(0)) / 111111
-
-        east_displacement_s = distance * sin(radians(180)) / 111111
-        north_displacement_s = distance * sin(radians(180)) / 111111
-
-        # calculate the total displacement for N, S respectively
-        waypoint_latitude_n = latitude + north_displacement_n
-        waypoint_longitude_n = longitude + east_displacement_n
-
-        waypoint_latitude_s = latitude + north_displacement_s
-        waypoint_longitude_s = longitude + east_displacement_s
-
-        potential_waypoints.append((waypoint_latitude_n, waypoint_longitude_n))
-        potential_waypoints.append((waypoint_latitude_s, waypoint_longitude_s))
+        potential_points_found = distance_to_coords_formula(latitude, longitude,
+                                                            0, 180)
+        potential_waypoints.extend(potential_points_found)
 
     if direction == 'lngwise' or direction == 'all':
         # then we know our bearing should be 90, 270 for E, W
-        east_displacement_e = distance * sin(radians(90)) / 111111
-        north_displacement_e = distance * cos(radians(90)) / 111111
-
-        east_displacement_w = distance * sin(radians(270)) / 111111
-        north_displacement_w = distance * sin(radians(270)) / 111111
-
-        # calculate the total displacement for N, S respectively
-        waypoint_latitude_e = latitude + north_displacement_e
-        waypoint_longitude_e = longitude + east_displacement_e
-
-        waypoint_latitude_w = latitude + north_displacement_w
-        waypoint_longitude_w = longitude + east_displacement_w
-
-        potential_waypoints.append((waypoint_latitude_e, waypoint_longitude_e))
-        potential_waypoints.append((waypoint_latitude_w, waypoint_longitude_w))
+        potential_points_found = distance_to_coords_formula(latitude, longitude,
+                                                            90, 270)
+        potential_waypoints.extend(potential_points_found)
 
     # return something like [(late, lnge), (latw, lngw)]
     print "this is potential_waypoints list", potential_waypoints
@@ -282,7 +271,8 @@ def interpolate_points(route_line, line_points):
 
 # ============ End of Interpolate/Break into 1/10 segments
 # ---------------------------------------------------------------------------
-# ============= Begin Find bad neighborhood + get geohash center point, look at steps before and after
+# ============= Begin Find bad neighborhood + get geohash center point
+# look at steps before and after
 def find_crime_areas(segmented_points):
     """ Find bad neighborhood + get geohash center point,
         look at steps before and after """
@@ -355,16 +345,18 @@ def find_crime_areas(segmented_points):
                                   delta_lat_after_current, delta_lng_after_current]
 
             segmented_points = check_directions_find_waypoint(current_point,
-                                                       segmented_points[j],
-                                                       delta_before_after,
-                                                       segmented_points)
+                                                              segmented_points[j],
+                                                              delta_before_after,
+                                                              segmented_points)
     print "this is segmented_points[0] returned", segmented_points[0]
     return segmented_points[0]
 
 
-# ============= End of Find bad neighborhood + get geohash center point, look at steps before and after
+# ============= End of Find bad neighborhood + get geohash center point
+#  look at steps before and after
 # ---------------------------------------------------------------------------
-# ============= Begin check total delta x,y's and what directions to try adding waypoints
+# ============= Begin check total delta x,y's and what directions
+# to try adding waypoints
 def check_directions_find_waypoint(current_point, current_segment,
                                    delta_before_after, segmented_points):
     """ check total delta x,y's and what directions to try adding waypoints """
@@ -429,7 +421,9 @@ def get_position_geohash(points):
             # if the geohash isn't found, need to do something,
             # query PostGIS for the geohash (not in db)
             # then assume that there are no crimes in the area
-            geohash_of_point = "SELECT ST_GeoHash(geometry(Point(%s, %s)), 7);" % (point[0], point[1])
+            geohash_of_point = "SELECT ST_GeoHash(geometry(Point(%s, %s)), 7);" \
+                % (point[0], point[1])
+
             geohash_found = db.engine.execute(geohash_of_point).fetchone()
 
             geohash_query = [0, geohash_found[0], 0, 0.0]
