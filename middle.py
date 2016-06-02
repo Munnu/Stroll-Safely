@@ -330,9 +330,9 @@ def chunk_user_route(detail_of_trip):
 
                 # check and assemble dict for lowest_crime_index waypoint
                 generate_waypoint(lowest_crime_index,
-                                      [waypoint_e_geohash_data,
-                                       waypoint_w_geohash_data],
-                                      segmented_points)
+                                  [waypoint_e_geohash_data,
+                                   waypoint_w_geohash_data],
+                                  segmented_points)
 
             elif (delta_lng_before_current > delta_lat_before_current) and \
                  (delta_lng_after_current > delta_lat_after_current):
@@ -378,9 +378,9 @@ def chunk_user_route(detail_of_trip):
 
                 # check and assemble dict for lowest_crime_index waypoint
                 generate_waypoint(lowest_crime_index,
-                                      [waypoint_n_geohash_data,
-                                       waypoint_s_geohash_data],
-                                      segmented_points)
+                                  [waypoint_n_geohash_data,
+                                   waypoint_s_geohash_data],
+                                  segmented_points)
             else:
                 print "inside else, checks all directions NS-EW"
 
@@ -427,11 +427,11 @@ def chunk_user_route(detail_of_trip):
 
                 # check and assemble dict for lowest_crime_index waypoint
                 generate_waypoint(lowest_crime_index,
-                                      [waypoint_n_geohash_data,
-                                       waypoint_s_geohash_data,
-                                       waypoint_e_geohash_data,
-                                       waypoint_w_geohash_data],
-                                      segmented_points)
+                                  [waypoint_n_geohash_data,
+                                   waypoint_s_geohash_data,
+                                   waypoint_e_geohash_data,
+                                   waypoint_w_geohash_data],
+                                  segmented_points)
 
     # print "segmented_points", json.dumps(segmented_points, indent=2)
     print "\n\n\n\n"  # compensating for the giant GET request
