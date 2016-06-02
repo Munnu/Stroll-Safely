@@ -199,7 +199,7 @@ def chunk_user_route(detail_of_trip):
     segmented_points = []  # creating an empty list to store these points
 
     # hold all the waypoints and other data
-    segmented_points.append({'data': {'waypoints': [] }})
+    segmented_points.append({'data': {'waypoints': []}})
 
     # for our start points that the user defines, geocoded
     segmented_points[0]['data']['start'] = {}
@@ -214,7 +214,7 @@ def chunk_user_route(detail_of_trip):
         # call the function that checks to see what geohash the line falls under
         # and if it is a high crime area
         # geohash_data is a dict: crime_index, total_crimes, lng, lat, geohash
-        geohash_data = get_position_geohash(point.x, point.y)
+        geohash_data = new_get_position_geohash([(point.x, point.y)])[0]  # dict
 
         # set the is_high_crime variable value to false, for testing
         geohash_data['is_high_crime'] = False
@@ -262,9 +262,9 @@ def chunk_user_route(detail_of_trip):
 
             # some raw sql to get the center coords of geohash
             geohash_center_sql = "SELECT " + \
-                          "ST_AsText(ST_PointFromGeoHash(geohash)) " + \
-                          "FROM nyc_crimes_by_geohash " + \
-                          "WHERE geohash='%s'" % (segmented_points[j]['geohash'])
+                "ST_AsText(ST_PointFromGeoHash(geohash)) " + \
+                "FROM nyc_crimes_by_geohash " + \
+                "WHERE geohash='%s'" % (segmented_points[j]['geohash'])
 
             # execute the raw sql, and there should only be one result... so get that.
             geohash_center_query = db.engine.execute(geohash_center_sql).fetchone()
@@ -296,7 +296,6 @@ def chunk_user_route(detail_of_trip):
             current_point = (segmented_points[j]['lat'],
                              segmented_points[j]['lng'])
 
-
             # before calling inspect_waypoints, check the deltas for the
             # step before and the step after to determine whether the function
             # needs to be called twice, or four times, and what direction to go
@@ -314,8 +313,6 @@ def chunk_user_route(detail_of_trip):
 # ---------------------------------------------------------------------------
 # ============= Begin check total delta x,y's and what directions to try adding waypoints
 
-
-
             # check to see if the delta x's in both directions are longer
             # than the delta y's in both directions
             if (delta_lat_before_current > delta_lng_before_current) and \
@@ -328,22 +325,23 @@ def chunk_user_route(detail_of_trip):
                 waypoint_e_w = inspect_waypoints(current_point, "lngwise")
 
                 # retreive the latitude, longitude coordinates from the ret
-                waypoint_e = waypoint_e_w[0]
-                waypoint_w = waypoint_e_w[1]
+                waypoint_e = waypoint_e_w[0]  # a tuple
+                waypoint_w = waypoint_e_w[1]  # a tuple
 
                 print "waypoint_data_e", waypoint_e, type(waypoint_e)
                 print "waypoint_data_w", waypoint_w, type(waypoint_w)
 
                 # store the waypoints retreived and compare their crime_index
-                waypoint_e_geohash_data = get_position_geohash(
-                    waypoint_e[0], waypoint_e[1])
-                waypoint_w_geohash_data = get_position_geohash(
-                    waypoint_w[0], waypoint_w[1])
+                waypoint_e_w_geohash_data = new_get_position_geohash(
+                    [waypoint_e, waypoint_w])  # ret [{dicte}, {dictw}]
+
+                waypoint_e_geohash_data = waypoint_e_w_geohash_data[0]
+                waypoint_w_geohash_data = waypoint_e_w_geohash_data[1]
 
                 lowest_crime_index = min(
                     waypoint_e_geohash_data['crime_index'],
                     waypoint_w_geohash_data['crime_index'],
-                    segmented_points['crime_index'])
+                    segmented_points[j]['crime_index'])
 
                 # check and assemble dict for lowest_crime_index waypoint
                 generate_waypoint(lowest_crime_index,
@@ -362,32 +360,33 @@ def chunk_user_route(detail_of_trip):
                 waypoint_n_s = inspect_waypoints(current_point, "latwise")
 
                 # retreive the latitude, longitude coordinates from the ret
-                waypoint_n = waypoint_n_s[0]
-                waypoint_s = waypoint_n_s[1]
+                waypoint_n = waypoint_n_s[0]  # a tuple
+                waypoint_s = waypoint_n_s[1]  # a tuple
 
                 print "waypoint_n", waypoint_n, type(waypoint_n)
                 print "waypoint_s", waypoint_s, type(waypoint_s)
 
                 # store the waypoints retreived and compare their crime_index
-                waypoint_n_geohash_data = get_position_geohash(
-                    waypoint_n[0], waypoint_n[1])
-                waypoint_s_geohash_data = get_position_geohash(
-                    waypoint_s[0], waypoint_s[1])
+                waypoint_n_s_geohash_data = new_get_position_geohash(
+                    [waypoint_n, waypoint_s])  # ret [{dictn}, {dicts}]
 
+                waypoint_n_geohash_data = waypoint_n_s_geohash_data[0]
+                waypoint_s_geohash_data = waypoint_n_s_geohash_data[1]
 
-                print "waypoint_n_geohash_data", waypoint_n_geohash_data
-                print "waypoint_s_geohash_data", waypoint_s_geohash_data
-                print "current_point_geohash", segmented_points[j]['geohash']
-
-                # get the lowest crime index out of the bunch
                 lowest_crime_index = min(
                     waypoint_n_geohash_data['crime_index'],
                     waypoint_s_geohash_data['crime_index'],
                     segmented_points[j]['crime_index'])
 
-                print "waypoint_n_geohash_data['crime_index']", waypoint_n_geohash_data['crime_index']
-                print "waypoint_s_geohash_data['crime_index']", waypoint_s_geohash_data['crime_index']
-                print "segmented_points[j]['crime_index']", segmented_points[j]['crime_index']
+                print "waypoint_n_geohash_data['crime_index']", \
+                    waypoint_n_geohash_data['crime_index']
+
+                print "waypoint_s_geohash_data['crime_index']", \
+                    waypoint_s_geohash_data['crime_index']
+
+                print "segmented_points[j]['crime_index']", \
+                    segmented_points[j]['crime_index']
+
                 print "lowest_crime_index", lowest_crime_index
 
                 # check and assemble dict for lowest_crime_index waypoint
@@ -399,7 +398,7 @@ def chunk_user_route(detail_of_trip):
                                   waypoint_s_geohash_data, segmented_points,
                                   waypoint_s)
             else:
-                print "inside else"
+                print "inside else, checks all directions NS-EW"
 
                 # don't forget to generate waypoints
                 waypoint_all = inspect_waypoints(current_point, "all")
@@ -412,22 +411,21 @@ def chunk_user_route(detail_of_trip):
                 print "waypoint_s", waypoint_s, type(waypoint_s)
 
                 # retreive the latitude, longitude coordinates from the ret
-                waypoint_e = waypoint_all[3]
-                waypoint_w = waypoint_all[4]
+                waypoint_e = waypoint_all[2]
+                waypoint_w = waypoint_all[3]
 
                 print "waypoint_e", waypoint_e, type(waypoint_e)
                 print "waypoint_w", waypoint_w, type(waypoint_w)
 
                 # store the waypoints retreived and compare their crime_index
-                waypoint_n_geohash_data = get_position_geohash(
-                    waypoint_n[0], waypoint_n[1])
-                waypoint_s_geohash_data = get_position_geohash(
-                    waypoint_s[0], waypoint_s[1])
+                # ret [{dictn}, ... , {dictw}]
+                waypoint_all_geohash_data = new_get_position_geohash(
+                    [waypoint_n, waypoint_s, waypoint_e, waypoint_w])
 
-                waypoint_e_geohash_data = get_position_geohash(
-                    waypoint_e[0], waypoint_e[1])
-                waypoint_w_geohash_data = get_position_geohash(
-                    waypoint_w[0], waypoint_w[1])
+                waypoint_n_geohash_data = waypoint_all_geohash_data[0]
+                waypoint_s_geohash_data = waypoint_all_geohash_data[1]
+                waypoint_e_geohash_data = waypoint_all_geohash_data[2]
+                waypoint_w_geohash_data = waypoint_all_geohash_data[3]
 
                 # get the lowest crime index out of the bunch
                 lowest_crime_index = min(
@@ -439,16 +437,16 @@ def chunk_user_route(detail_of_trip):
 
                 # check and assemble dict for lowest_crime_index waypoint
                 generate_waypoint(lowest_crime_index, waypoint_n_geohash_data,
-                    segmented_points, waypoint_n)
+                                  segmented_points, waypoint_n)
 
                 generate_waypoint(lowest_crime_index, waypoint_s_geohash_data,
-                    segmented_points, waypoint_s)
+                                  segmented_points, waypoint_s)
 
                 generate_waypoint(lowest_crime_index, waypoint_e_geohash_data,
-                    segmented_points, waypoint_e)
+                                  segmented_points, waypoint_e)
 
                 generate_waypoint(lowest_crime_index, waypoint_w_geohash_data,
-                    segmented_points, waypoint_w)
+                                  segmented_points, waypoint_w)
 
     # print "segmented_points", json.dumps(segmented_points, indent=2)
     print "\n\n\n\n"  # compensating for the giant GET request
@@ -457,37 +455,72 @@ def chunk_user_route(detail_of_trip):
     return segmented_points[0]
 
 
-def get_position_geohash(point_lat, point_lng):
-    """ This takes a point and with that point find out what geohash it falls
-        under. With that information we could get the crime_index and total_crimes
+def new_get_position_geohash(points):
+    """ This takes points and with these points find out what geohash each falls
+        under. Then we could get the crime_index and total_crimes
     """
 
-    # get the lat, lng position and get the geohash and crime_index from the db
-    # some raw sql to do the geohash conversion
-    geohash_sql = "SELECT * " + \
-                  "FROM nyc_crimes_by_geohash " + \
-                  "WHERE geohash=" + \
-                  "ST_GeoHash(st_makepoint(%s, %s), 7);" % \
-                  (point_lat, point_lng)
+    # takes in a list as a parameter of [(lat, lng) ... (lat, lng)]
+    coords_data = []  # to store the dictionary generated
 
-    # execute the raw sql, and there should only be one result... so get that.
-    geohash_query = db.engine.execute(geohash_sql).fetchone()
+    # do something like a for loop over here
+    for point in points:
+        geohash_sql = "SELECT * " + \
+                      "FROM nyc_crimes_by_geohash " + \
+                      "WHERE geohash=" + \
+                      "ST_GeoHash(st_makepoint(%s, %s), 7);" % \
+                      (point[0], point[1])
 
-    if geohash_query is None:
-        # TODO: if the geohash isn't found, need to do something, maybe set it to
-        # another geohash type that's low crime...?
-        geohash_query = [0,'hfuf6ge', 0, 0.0]
-    geohash_query_data = {
-        'geohash': geohash_query[1],
-        'total_crimes': geohash_query[2],
-        'crime_index': float(geohash_query[3])
-        }
+        # execute the raw sql, and there should only be one result... so get that.
+        geohash_query = db.engine.execute(geohash_sql).fetchone()
 
-    # TODO: Write something that checks queries based on the crime_count desc
-    # find the 5th item in that query and say that any geohash with a crime
-    # index greater than or equal to the 5th item is considered dangerous
+        if geohash_query is None:
+            # TODO: if the geohash isn't found, need to do something, maybe set it to
+            # another geohash type that's low crime...?
+            geohash_query = [0, 'hfuf6ge', 0, 0.0]
 
-    return geohash_query_data
+        geohash_query_data = {
+            'geohash': geohash_query[1],
+            'total_crimes': geohash_query[2],
+            'crime_index': float(geohash_query[3])
+            }
+        coords_data.append(geohash_query_data)
+
+    # return something like [{dicte}, {dictw}], or {dict}, based on total pts
+    return coords_data
+
+
+# def get_position_geohash(point_lat, point_lng):
+#     """ This takes a point and with that point find out what geohash it falls
+#         under. With that information we could get the crime_index and total_crimes
+#     """
+
+#     # get the lat, lng position and get the geohash and crime_index from the db
+#     # some raw sql to do the geohash conversion
+#     geohash_sql = "SELECT * " + \
+#                   "FROM nyc_crimes_by_geohash " + \
+#                   "WHERE geohash=" + \
+#                   "ST_GeoHash(st_makepoint(%s, %s), 7);" % \
+#                   (point_lat, point_lng)
+
+#     # execute the raw sql, and there should only be one result... so get that.
+#     geohash_query = db.engine.execute(geohash_sql).fetchone()
+
+#     if geohash_query is None:
+#         # TODO: if the geohash isn't found, need to do something, maybe set it to
+#         # another geohash type that's low crime...?
+#         geohash_query = [0,'hfuf6ge', 0, 0.0]
+#     geohash_query_data = {
+#         'geohash': geohash_query[1],
+#         'total_crimes': geohash_query[2],
+#         'crime_index': float(geohash_query[3])
+#         }
+
+#     # TODO: Write something that checks queries based on the crime_count desc
+#     # find the 5th item in that query and say that any geohash with a crime
+#     # index greater than or equal to the 5th item is considered dangerous
+
+#     return geohash_query_data
 
 
 def total_crimes_in_bounds(user_coords):
@@ -514,7 +547,7 @@ def total_crimes_in_bounds(user_coords):
     # {'lat': 40.765385, 'lng': -74.00119529999999}
     # {'lat': 40.748947199999996, 'lng': -73.9566736}
     print "this is the top_left_coord and bottom_right_coord", \
-                top_left_coord, bottom_right_coord
+        top_left_coord, bottom_right_coord
 
     # once the bounds are generated, we will want to do a query for all of the
     # geohashes that are within those bounds. Let's do that now.
