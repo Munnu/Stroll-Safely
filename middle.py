@@ -49,6 +49,31 @@ def address_to_lat_lng(user_points):
     return user_coords
 
 
+def execute_waypoint_sequence(detail_of_trip):
+    """ commence all function calls necessary for waypoint discovery """
+
+    # rets (route_line, line_points)
+    sliced_route_and_line_points = chunk_user_route(detail_of_trip)
+
+    sliced_route = sliced_route_and_line_points[0]
+    line_points = sliced_route_and_line_points[1]
+
+    # Interpolate/Break into 1/10 segments
+    segmented_points = interpolate_points(sliced_route, line_points)
+    waypoints = find_crime_areas(segmented_points)
+
+    # current_point = delta_and_current_points[0]
+    # delta_lat_lng_before_after = delta_and_current_points[1:]
+
+    # waypoints = check_directions_find_waypoint(current_point,
+    #                                            delta_lat_lng_before_after,
+    #                                            segmented_points)
+
+    # print "segmented_points", json.dumps(segmented_points, indent=2)
+    print "\n\n\n\n"  # compensating for the giant GET request
+    return waypoints
+
+
 def inspect_waypoints(current_point, direction):
     """ inspects to see where is a potential waypoint by taking
     a single point, a distance (constant), and a direction """
@@ -165,9 +190,6 @@ def chunk_user_route(detail_of_trip):
     """ This takes the entire length of the route and breaks it up into
         smaller segments for sampling purposes. """
 
-    segment_size = 0.1  # value to break the entire route into 1/10 segments
-    distance_along_line = 0.1  # start distance along line at the segment size
-
     # $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
     # since I can't get javascript to load, here's a hacky way of loading json
     # that details the route based on the user's point A and point B
@@ -198,10 +220,17 @@ def chunk_user_route(detail_of_trip):
 
     # Now load those points into a geometry, here shapely's LineString type.
     route_line = LineString(line_points)
+    return (route_line, line_points)
+
 
 # ============ End of get gmap trip legs section
 # ---------------------------------------------------------------------------
 # ============= Begin Interpolate/Break into 1/10 segments
+def interpolate_points(route_line, line_points):
+    """ Interpolate/Break into 1/10 segments """
+
+    segment_size = 0.1  # value to break the entire route into 1/10 segments
+    distance_along_line = 0.1  # start distance along line at the segment size
 
     # break up the line into 1/10 segments, iterate. We are ignoring the 0th
     # element as that's the start position and that's already stored
@@ -248,16 +277,20 @@ def chunk_user_route(detail_of_trip):
         'lng': line_points[-1][1]
         }
 
+    return segmented_points
+
+
 # ============ End of Interpolate/Break into 1/10 segments
 # ---------------------------------------------------------------------------
 # ============= Begin Find bad neighborhood + get geohash center point, look at steps before and after
+def find_crime_areas(segmented_points):
+    """ Find bad neighborhood + get geohash center point,
+        look at steps before and after """
 
-# def find_crime_areas(segmented_points):
     # once all of the interpolated points are loaded into segmented_points
     # loop through them again to find out which places are high crime.
     bad_neighborhood_crime_index = 0.2
     for j in range(1, len(segmented_points)):
-        print "What's goin on?"
         print segmented_points[j]['crime_index'], segmented_points[j]['total_crimes']
         # ====================================================================
         # waypoint algorithm fleshing out
@@ -318,39 +351,56 @@ def chunk_user_route(detail_of_trip):
             delta_lat_after_current = point_after[0] - current_point[0]
             delta_lng_after_current = point_after[0] - current_point[1]
 
+            delta_before_after = [(delta_lat_before_current, delta_lng_before_current),
+                                  (delta_lat_after_current, delta_lng_after_current)]
+
+            waypoints = check_directions_find_waypoint(current_point,
+                                                       segmented_points[j],
+                                                       delta_before_after,
+                                                       segmented_points)
+
+    return waypoints
+
+
 # ============= End of Find bad neighborhood + get geohash center point, look at steps before and after
 # ---------------------------------------------------------------------------
 # ============= Begin check total delta x,y's and what directions to try adding waypoints
+def check_directions_find_waypoint(current_point, current_segment,
+                                   delta_before_after, segmented_points):
+    """ check total delta x,y's and what directions to try adding waypoints """
 
-            # check to see if the delta x's in both directions are longer
-            # than the delta y's in both directions
-            if (delta_lat_before_current > delta_lng_before_current) and \
-               (delta_lat_after_current > delta_lng_after_current):
-                print "inside first if"
-                # the latitudes are longer than the longitudes, get waypoints
-                # in the longitude direction
+    delta_lat_before_current = delta_before_after[0]
+    delta_lng_before_current = delta_before_after[1]
 
-                # don't forget to generate waypoints
-                waypoint_e_w = inspect_waypoints(current_point, "lngwise")
-                try_waypoints(waypoint_e_w, segmented_points[j], segmented_points)
-            elif (delta_lng_before_current > delta_lat_before_current) and \
-                 (delta_lng_after_current > delta_lat_after_current):
-                print "inside elif, checks the north and south creation"
-                # the longitudes are longer than the latitudes, get waypoints
-                # in the latitude direction
+    delta_lat_after_current = delta_before_after[2]
+    delta_lng_after_current = delta_before_after[3]
 
-                # don't forget to generate waypoints
-                waypoint_n_s = inspect_waypoints(current_point, "latwise")
-                try_waypoints(waypoint_n_s, segmented_points[j], segmented_points)
-            else:
-                print "inside else, checks all directions NS-EW"
+    # check to see if the delta x's in both directions are longer
+    # than the delta y's in both directions
+    if (delta_lat_before_current > delta_lng_before_current) and \
+       (delta_lat_after_current > delta_lng_after_current):
+        print "inside first if"
+        # the latitudes are longer than the longitudes, get waypoints
+        # in the longitude direction
 
-                # don't forget to generate waypoints
-                waypoint_all = inspect_waypoints(current_point, "all")
-                try_waypoints(waypoint_all, segmented_points[j], segmented_points)
+        # don't forget to generate waypoints
+        waypoint_e_w = inspect_waypoints(current_point, "lngwise")
+        try_waypoints(waypoint_e_w, current_segment, segmented_points)
+    elif (delta_lng_before_current > delta_lat_before_current) and \
+         (delta_lng_after_current > delta_lat_after_current):
+        print "inside elif, checks the north and south creation"
+        # the longitudes are longer than the latitudes, get waypoints
+        # in the latitude direction
 
-    # print "segmented_points", json.dumps(segmented_points, indent=2)
-    print "\n\n\n\n"  # compensating for the giant GET request
+        # don't forget to generate waypoints
+        waypoint_n_s = inspect_waypoints(current_point, "latwise")
+        try_waypoints(waypoint_n_s, current_segment, segmented_points)
+    else:
+        print "inside else, checks all directions NS-EW"
+
+        # don't forget to generate waypoints
+        waypoint_all = inspect_waypoints(current_point, "all")
+        try_waypoints(waypoint_all, current_segment, segmented_points)
 
     # return only the waypoints and start/end lat,lngs
     return segmented_points[0]
