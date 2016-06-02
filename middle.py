@@ -111,7 +111,12 @@ def inspect_waypoints(current_point, direction):
     print "this is potential_waypoints list", potential_waypoints
     return potential_waypoints
 
+
 def generate_waypoint(lowest_crime_index, points_dict_data, segmented_points):
+    """ This function takes in the lowest_crime_index and waypoint dictionary
+        to check if the lowest_crime_index is in that waypoint dictionary
+        and if so, construct waypoint data to insert into list """
+
     # passes in something like waypoints_dict_data is [{dictn,}, ... ,{dictw}]
     # points is [(pointn, pointn), ... ,(pointw, pointw)]
     print "inside generate_waypoint"
@@ -129,8 +134,11 @@ def generate_waypoint(lowest_crime_index, points_dict_data, segmented_points):
                              'lng': point_data['point'][1]},
                 'stopover': False  # b/c not stop on the route, a recalc
                 })
-
     # returns nothing, just appends stuff into segmented_points
+
+
+def try_waypoints():
+    """ function that calls all of the other functions repeated in program """
     pass
 
 
