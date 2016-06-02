@@ -351,8 +351,8 @@ def find_crime_areas(segmented_points):
             delta_lat_after_current = point_after[0] - current_point[0]
             delta_lng_after_current = point_after[0] - current_point[1]
 
-            delta_before_after = [(delta_lat_before_current, delta_lng_before_current),
-                                  (delta_lat_after_current, delta_lng_after_current)]
+            delta_before_after = [delta_lat_before_current, delta_lng_before_current,
+                                  delta_lat_after_current, delta_lng_after_current]
 
             waypoints = check_directions_find_waypoint(current_point,
                                                        segmented_points[j],
