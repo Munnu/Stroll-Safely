@@ -112,29 +112,6 @@ def inspect_waypoints(current_point, direction):
     return potential_waypoints
 
 
-# def inspect_waypoints(latitude_longitude, bearing):
-#     """ inspects to see if this is point is a potential waypoint by taking
-#         a single point, a distance (constant), and a direction """
-
-#     # inspect potential waypoints
-#     # one degree of latitude is approximately 10^7 / 90 = 111,111 meters.
-#     # http://stackoverflow.com/questions/2187657/calculate-second-point-
-#     # knowing-the-starting-point-and-distance
-#     # one degree of latitude is approximately 10^7 / 90 = 111,111 meters
-#     # http://stackoverflow.com/questions/13836416/geohash-and-max-distance
-#     distance = 118  # meters
-#     latitude = latitude_longitude[0]
-#     longitude = latitude_longitude[1]
-
-#     east_displacement = distance * sin(radians(bearing)) / 111111
-#     north_displacement = distance * cos(radians(bearing)) / 111111
-
-#     waypoint_latitude = latitude + north_displacement
-#     waypoint_longitude = longitude + east_displacement
-
-#     return waypoint_latitude, waypoint_longitude
-
-
 def generate_waypoint(lowest_crime_index, waypoint_dict, segmented_points, waypoint_point):
     """ This function takes in the lowest_crime_index and waypoint dictionary
         to check if the lowest_crime_index is in that waypoint dictionary
@@ -214,7 +191,7 @@ def chunk_user_route(detail_of_trip):
         # call the function that checks to see what geohash the line falls under
         # and if it is a high crime area
         # geohash_data is a dict: crime_index, total_crimes, lng, lat, geohash
-        geohash_data = new_get_position_geohash([(point.x, point.y)])[0]  # dict
+        geohash_data = get_position_geohash([(point.x, point.y)])[0]  # dict
 
         # set the is_high_crime variable value to false, for testing
         geohash_data['is_high_crime'] = False
@@ -332,7 +309,7 @@ def chunk_user_route(detail_of_trip):
                 print "waypoint_data_w", waypoint_w, type(waypoint_w)
 
                 # store the waypoints retreived and compare their crime_index
-                waypoint_e_w_geohash_data = new_get_position_geohash(
+                waypoint_e_w_geohash_data = get_position_geohash(
                     [waypoint_e, waypoint_w])  # ret [{dicte}, {dictw}]
 
                 waypoint_e_geohash_data = waypoint_e_w_geohash_data[0]
@@ -367,7 +344,7 @@ def chunk_user_route(detail_of_trip):
                 print "waypoint_s", waypoint_s, type(waypoint_s)
 
                 # store the waypoints retreived and compare their crime_index
-                waypoint_n_s_geohash_data = new_get_position_geohash(
+                waypoint_n_s_geohash_data = get_position_geohash(
                     [waypoint_n, waypoint_s])  # ret [{dictn}, {dicts}]
 
                 waypoint_n_geohash_data = waypoint_n_s_geohash_data[0]
@@ -419,7 +396,7 @@ def chunk_user_route(detail_of_trip):
 
                 # store the waypoints retreived and compare their crime_index
                 # ret [{dictn}, ... , {dictw}]
-                waypoint_all_geohash_data = new_get_position_geohash(
+                waypoint_all_geohash_data = get_position_geohash(
                     [waypoint_n, waypoint_s, waypoint_e, waypoint_w])
 
                 waypoint_n_geohash_data = waypoint_all_geohash_data[0]
@@ -455,7 +432,7 @@ def chunk_user_route(detail_of_trip):
     return segmented_points[0]
 
 
-def new_get_position_geohash(points):
+def get_position_geohash(points):
     """ This takes points and with these points find out what geohash each falls
         under. Then we could get the crime_index and total_crimes
     """
@@ -488,39 +465,6 @@ def new_get_position_geohash(points):
 
     # return something like [{dicte}, {dictw}], or {dict}, based on total pts
     return coords_data
-
-
-# def get_position_geohash(point_lat, point_lng):
-#     """ This takes a point and with that point find out what geohash it falls
-#         under. With that information we could get the crime_index and total_crimes
-#     """
-
-#     # get the lat, lng position and get the geohash and crime_index from the db
-#     # some raw sql to do the geohash conversion
-#     geohash_sql = "SELECT * " + \
-#                   "FROM nyc_crimes_by_geohash " + \
-#                   "WHERE geohash=" + \
-#                   "ST_GeoHash(st_makepoint(%s, %s), 7);" % \
-#                   (point_lat, point_lng)
-
-#     # execute the raw sql, and there should only be one result... so get that.
-#     geohash_query = db.engine.execute(geohash_sql).fetchone()
-
-#     if geohash_query is None:
-#         # TODO: if the geohash isn't found, need to do something, maybe set it to
-#         # another geohash type that's low crime...?
-#         geohash_query = [0,'hfuf6ge', 0, 0.0]
-#     geohash_query_data = {
-#         'geohash': geohash_query[1],
-#         'total_crimes': geohash_query[2],
-#         'crime_index': float(geohash_query[3])
-#         }
-
-#     # TODO: Write something that checks queries based on the crime_count desc
-#     # find the 5th item in that query and say that any geohash with a crime
-#     # index greater than or equal to the 5th item is considered dangerous
-
-#     return geohash_query_data
 
 
 def total_crimes_in_bounds(user_coords):
