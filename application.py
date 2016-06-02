@@ -15,6 +15,7 @@ def index():
     """ runs app name mainspace """
     return render_template("main.html")
 
+
 @app.route('/start-end.json')
 def parse_user_start_end():
     """ takes the user's start and end points in address form
@@ -45,7 +46,6 @@ def directionsData():
     # print "This is directions_data type", type(directions_data)
     # print "This is directions_data", json.dumps(directions_data, indent=2)
     # print "+++++++++++++++++++++++++++++++++++++++++++++"
-
 
     # call a function in middle.py that takes the directions and manipulates
     waypoints = chunk_user_route(directions_data)
