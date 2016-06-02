@@ -46,7 +46,6 @@ def address_to_lat_lng(user_points):
     user_coords['point_a'] = point_a_geo_results['geometry']['location']
     user_coords['point_b'] = point_b_geo_results['geometry']['location']
 
-    bounds = total_crimes_in_bounds(user_coords)
     return user_coords
 
 
@@ -137,9 +136,70 @@ def generate_waypoint(lowest_crime_index, points_dict_data, segmented_points):
     # returns nothing, just appends stuff into segmented_points
 
 
-def try_waypoints():
+def try_waypoints(waypoint_data, segmented_points):
     """ function that calls all of the other functions repeated in program """
-    pass
+
+    # waypoint_data will be a list [waypoint_n, ... , waypoint_w]
+
+    # store the waypoints retreived and compare their crime_index
+    # ret [{dicte}, {dictw}]
+    waypoint_geohash_data_all = get_position_geohash(waypoint_data)
+
+    for data in waypoint_geohash_data_all:
+        # therefore either NS-EW
+        waypoint_geohash_data_1 = waypoint_geohash_data_all[0]
+        waypoint_geohash_data_2 = waypoint_geohash_data_all[1]
+
+        waypoint_geohash_data_1['point'] = waypoint_1
+        waypoint_geohash_data_2['point'] = waypoint_2
+
+        lowest_crime_index = min(
+            waypoint_geohash_data_1['crime_index'],
+            waypoint_geohash_data_2['crime_index'],
+            segmented_points['crime_index'])
+
+        # check and assemble dict for lowest_crime_index waypoint
+        generate_waypoint(lowest_crime_index,
+                          [waypoint_n_geohash_data,
+                           waypoint_s_geohash_data],
+                          segmented_points)
+    # if len(waypoint_data) == 2:
+    #     # therefore either NS-EW
+    #     waypoint_geohash_data_1 = waypoint_geohash_data_all[0]
+    #     waypoint_geohash_data_2 = waypoint_geohash_data_all[1]
+
+    #     waypoint_geohash_data_1['point'] = waypoint_1
+    #     waypoint_geohash_data_2['point'] = waypoint_2
+
+    #     lowest_crime_index = min(
+    #         waypoint_geohash_data_1['crime_index'],
+    #         waypoint_geohash_data_2['crime_index'],
+    #         segmented_points['crime_index'])
+
+    #     # check and assemble dict for lowest_crime_index waypoint
+    #     generate_waypoint(lowest_crime_index,
+    #                       [waypoint_n_geohash_data,
+    #                        waypoint_s_geohash_data],
+    #                       segmented_points)
+
+    # elif len(waypoint_data) == 4:
+    #     # therefore either NS-EW
+    #     waypoint_geohash_data_1 = waypoint_geohash_data_all[0]
+    #     waypoint_geohash_data_2 = waypoint_geohash_data_all[1]
+
+    #     waypoint_geohash_data_1['point'] = waypoint_1
+    #     waypoint_geohash_data_2['point'] = waypoint_2
+
+    #     lowest_crime_index = min(
+    #         waypoint_geohash_data_1['crime_index'],
+    #         waypoint_geohash_data_2['crime_index'],
+    #         segmented_points['crime_index'])
+
+    #     # check and assemble dict for lowest_crime_index waypoint
+    #     generate_waypoint(lowest_crime_index,
+    #                       [waypoint_n_geohash_data,
+    #                        waypoint_s_geohash_data],
+    #                       segmented_points)
 
 
 def chunk_user_route(detail_of_trip):
