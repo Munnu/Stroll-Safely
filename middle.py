@@ -354,12 +354,12 @@ def find_crime_areas(segmented_points):
             delta_before_after = [delta_lat_before_current, delta_lng_before_current,
                                   delta_lat_after_current, delta_lng_after_current]
 
-            waypoints = check_directions_find_waypoint(current_point,
+            segmented_points = check_directions_find_waypoint(current_point,
                                                        segmented_points[j],
                                                        delta_before_after,
                                                        segmented_points)
-
-    return waypoints
+    print "this is segmented_points[0] returned", segmented_points[0]
+    return segmented_points[0]
 
 
 # ============= End of Find bad neighborhood + get geohash center point, look at steps before and after
@@ -426,9 +426,13 @@ def get_position_geohash(points):
         geohash_query = db.engine.execute(geohash_sql).fetchone()
 
         if geohash_query is None:
-            # TODO: if the geohash isn't found, need to do something, maybe set it to
-            # another geohash type that's low crime...?
-            geohash_query = [0, 'hfuf6ge', 0, 0.0]
+            # if the geohash isn't found, need to do something,
+            # query PostGIS for the geohash (not in db)
+            # then assume that there are no crimes in the area
+            geohash_of_point = "SELECT ST_GeoHash(geometry(Point(%s, %s)), 7);" % (point[0], point[1])
+            geohash_found = db.engine.execute(geohash_of_point).fetchone()
+
+            geohash_query = [0, geohash_found[0], 0, 0.0]
 
         geohash_query_data = {
             'geohash': geohash_query[1],
@@ -482,10 +486,7 @@ def total_crimes_in_bounds(user_coords):
     # execute the raw sql, there should be many
     geohash_in_bounds_query = db.engine.execute(geohash_in_bounds_sql).fetchall()
 
-    print "This is geohash_in_bounds_query", geohash_in_bounds_query
-
     for row in geohash_in_bounds_query:
-        print "This is row", row
         # strip the lat, lngs before putting them in
         # some string splitting to extract data
         location = row[4].strip("POINT(").rstrip(")").split()
