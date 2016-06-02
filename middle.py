@@ -424,11 +424,8 @@ def get_position_geohash(points):
         geohash_query_data = {
             'geohash': geohash_query[1],
             'total_crimes': geohash_query[2],
-<<<<<<< HEAD
             'crime_index': float(geohash_query[3]),
             'point': point
-=======
->>>>>>> parent of 24a50cc... fleshed out try_waypoints function
             'crime_index': float(geohash_query[3])
             }
         coords_data.append(geohash_query_data)
