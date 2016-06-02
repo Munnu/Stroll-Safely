@@ -494,7 +494,7 @@ def get_position_geohash(points):
         geohash_query_data = {
             'geohash': geohash_query[1],
             'total_crimes': geohash_query[2],
-            'crime_index': float(geohash_query[3])
+            'crime_index': float(geohash_query[3]),
             'point': point
             }
         coords_data.append(geohash_query_data)
