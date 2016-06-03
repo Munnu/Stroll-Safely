@@ -3,7 +3,7 @@ from flask_restful import marshal_with, fields
 from model import Crime_Data_NYC, NYC_Crimes_by_Geohash, connect_to_db
 #from model import init_app
 
-from middle import get_twenty, address_to_lat_lng, chunk_user_route
+from middle import address_to_lat_lng, execute_waypoint_sequence
 from middle import total_crimes_in_bounds
 import json
 
@@ -14,6 +14,7 @@ app = Flask(__name__)
 def index():
     """ runs app name mainspace """
     return render_template("main.html")
+
 
 @app.route('/start-end.json')
 def parse_user_start_end():
@@ -46,9 +47,8 @@ def directionsData():
     # print "This is directions_data", json.dumps(directions_data, indent=2)
     # print "+++++++++++++++++++++++++++++++++++++++++++++"
 
-
     # call a function in middle.py that takes the directions and manipulates
-    waypoints = chunk_user_route(directions_data)
+    waypoints = execute_waypoint_sequence(directions_data)
 
     print "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@"
     print "THIS IS WAYPOINTS", waypoints  # currently is a list of locations [{location: ...}, {location: ...}]
