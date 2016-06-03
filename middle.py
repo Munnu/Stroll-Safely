@@ -82,7 +82,7 @@ def distance_to_coords_formula(latitude, longitude, bearing1, bearing2):
     north_displacement_a = distance * cos(radians(bearing1)) / 111111
 
     east_displacement_b = distance * sin(radians(bearing2)) / 111111
-    north_displacement_b = distance * sin(radians(bearing2)) / 111111
+    north_displacement_b = distance * cos(radians(bearing2)) / 111111
 
     # calculate the total displacement for N, S respectively
     waypoint_latitude_a = latitude + north_displacement_a
