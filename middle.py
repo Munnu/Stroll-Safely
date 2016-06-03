@@ -252,7 +252,6 @@ def interpolate_points(route_line, line_points):
 
         segmented_points.append(geohash_data)  # append data on location
         distance_along_line += segment_size
-        print "crime index:", geohash_data['crime_index'], "geohash:", geohash_data['geohash']
 
     # also add the point A, point B latitude and longitude that the user gives
     # to the data that will be sent back to JS
@@ -282,9 +281,7 @@ def find_crime_areas(segmented_points):
     bad_neighborhood_crime_index = 0.2
 
     for j in range(1, len(segmented_points)):
-        print "j = %d, len = %d" % (j, len(segmented_points))
-        print "type(segmented_points[j])", type(segmented_points[j])
-        print segmented_points[j]['crime_index'], segmented_points[j]['total_crimes']
+        print "segmented_points[j]", segmented_points[j]
         # ====================================================================
         # waypoint algorithm fleshing out
         # ====================================================================
@@ -463,11 +460,6 @@ def total_crimes_in_bounds(user_coords):
     # subtract 0.005 to latitude, and add 0.02 to longitude
     bottom_right_coord = {'lat': min(point_a['lat'], point_b['lat']) - 0.005,
                           'lng': max(point_a['lng'], point_b['lng']) + 0.02}
-
-    # {'lat': 40.765385, 'lng': -74.00119529999999}
-    # {'lat': 40.748947199999996, 'lng': -73.9566736}
-    print "this is the top_left_coord and bottom_right_coord", \
-        top_left_coord, bottom_right_coord
 
     # once the bounds are generated, we will want to do a query for all of the
     # geohashes that are within those bounds. Let's do that now.
