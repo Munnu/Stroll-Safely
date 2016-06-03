@@ -184,7 +184,12 @@ var startDirections =  function(event){
 
  };
 
-// -- Needed for the onSubmit behavior
+ function handleSubmit(evt){
+  alert('SUBMITTED!');
+  startDirections(evt);
+ }
+
+// -- Needed for the onSubmit behavior, may not work with google's map.controls
 $('#route-me').submit(startDirections);
 // ------------------------------------
 
@@ -228,7 +233,7 @@ function initMap() {
         // push the input boxes to the map screen
         map.controls[google.maps.ControlPosition.TOP_LEFT].push(start);
         map.controls[google.maps.ControlPosition.TOP_LEFT].push(end);
-        // map.controls[google.maps.ControlPosition.TOP_LEFT].push(route_button);
+        map.controls[google.maps.ControlPosition.TOP_LEFT].push(route_button);
 
         // autocomplete stuff, this line generates the autocompletion
         var start_autocomplete = new google.maps.places.Autocomplete(start);
@@ -241,6 +246,21 @@ function initMap() {
         directionsDisplay.setMap(map);
     }); // end geocoder
 }
+
+// this part has been added because there is this thing where the map.controls
+// from google removes all features of my program (the button renders useless)
+$('body').keypress(function(event) {
+  if (event.keyCode == '13') { // enter button is keyCode 13
+    if ($("input").is(":focus")) { // if the input is selected
+      // we want to call our function that routes
+      startDirections(event);
+    }
+  }
+});
+
+$("button").click(function(event){
+    startDirections(event);
+});
 
 // display the map
 google.maps.event.addDomListener(window, 'load', initMap);
