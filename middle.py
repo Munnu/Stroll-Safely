@@ -280,7 +280,10 @@ def find_crime_areas(segmented_points):
     # once all of the interpolated points are loaded into segmented_points
     # loop through them again to find out which places are high crime.
     bad_neighborhood_crime_index = 0.2
+
     for j in range(1, len(segmented_points)):
+        print "j = %d, len = %d" % (j, len(segmented_points))
+        print "type(segmented_points[j])", type(segmented_points[j])
         print segmented_points[j]['crime_index'], segmented_points[j]['total_crimes']
         # ====================================================================
         # waypoint algorithm fleshing out
@@ -395,7 +398,7 @@ def check_directions_find_waypoint(current_point, current_segment,
         try_waypoints(waypoint_all, current_segment, segmented_points)
 
     # return only the waypoints and start/end lat,lngs
-    return segmented_points[0]
+    return segmented_points
 
 
 def get_position_geohash(points):
