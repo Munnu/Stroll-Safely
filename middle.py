@@ -121,7 +121,6 @@ def inspect_waypoints(current_point, direction):
         potential_waypoints.extend(potential_points_found)
 
     # return something like [(late, lnge), (latw, lngw)]
-    print "this is potential_waypoints list", potential_waypoints
     return potential_waypoints
 
 
@@ -162,11 +161,7 @@ def generate_waypoint(lowest_crime_index, points_dict_data, segmented_points):
     for point_data in points_dict_data:
         print "this is point_data", point_data
         if lowest_crime_index in point_data.values():
-            print "if statement: lowest_crime_index in point_data"
             # store the waypoint coords
-
-            print "this is segmented_points", segmented_points
-
             segmented_points[0]['data']['waypoints'].append({
                 'location': {'lat': point_data['point'][0],
                              'lng': point_data['point'][1]},
@@ -339,7 +334,7 @@ def find_crime_areas(segmented_points):
             # get the change in latitude and longitude between the before
             # and current point location
             delta_lat_after_current = point_after[0] - current_point[0]
-            delta_lng_after_current = point_after[0] - current_point[1]
+            delta_lng_after_current = point_after[1] - current_point[1]
 
             delta_before_after = [delta_lat_before_current, delta_lng_before_current,
                                   delta_lat_after_current, delta_lng_after_current]
