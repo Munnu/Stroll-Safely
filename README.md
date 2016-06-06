@@ -81,6 +81,7 @@ This project has the same exact file called ```postgis_init.sql``` inside of my 
 4,638cd7b7,07/18/1972 11:00:00 PM,Tuesday,Jul,18,1972,23,7,19,2012,GRAND LARCENY OF MOTOR VEHICLE,FELONY,F,73,BROOKLYN,N.Y. POLICE DEPT,1005876,182440,point(40.6674141890001 -73.9220463899999),40.6674141890001,-73.9220463899999
 5,6e410287,05/21/1987 12:01:00 AM,Thursday,May,21,1987,0,5,28,2009,GRAND LARCENY,FELONY,K,75,BROOKLYN,N.Y. POLICE DEPT,1017958,182266,point(40.6668988440001 -73.878495425),40.6668988440001,-73.878495425
 	```
+
 5. Now, let's use [pgloader to load the formatted CSV](http://pgloader.io/howto/csv.html) into Postgres.
 	1. There is a file in this project: `csv_files/ny_with_gis_final_csv.load`.
 	
