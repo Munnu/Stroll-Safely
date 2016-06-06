@@ -13,10 +13,10 @@ The map shows the original Google suggested route and then the adjusted safer ro
 
 ### Screenshots: Before and After
 ---
-![image](https://raw.githubusercontent.com/Munnu/Stroll-Safely/master/progress_screenshots/waypoints_with_heatmap_before.png =500x)
+![image](https://github.com/Munnu/Stroll-Safely/blob/master/progress_screenshots/waypoints_with_heatmap_before.png =500x)
 
 
-![image](https://raw.githubusercontent.com/Munnu/Stroll-Safely/master/progress_screenshots/waypoints_with_heatmap_after.png =500x)
+![image](https://github.com/Munnu/Stroll-Safely/blob/master/progress_screenshots/waypoints_with_heatmap_after.png =500x)
 
 ### Why Was This Made
 ---
