@@ -72,8 +72,8 @@ This project has the same exact file called ```postgis_init.sql``` inside of my 
 	2. In the CSV file it would be wise to add a Latitude and Longitude column and do a macro where all entries are populated with their Latitude and Longitude extracted from the Location column. The program currently relies on these two columns in addition to the Location column.
 	3. You will also need to record and execute a macro for creating a `point` datatype for the entries in the Location column.
 	4. Here is a snippet of what the end result of the csv file should look like:
-	
-		```
+
+	```
 	OBJECTID,Identifier,Occurrence Date,Day of Week,Occurrence Month,Occurrence Day,Occurrence Year,Occurrence Hour,CompStat Month,CompStat Day,CompStat Year,Offense,Offense Classification,Sector,Precinct,Borough,Jurisdiction,XCoordinate,YCoordinate,Location, Latitude, Longitude
 1,f070032d,09/06/1940 07:30:00 PM,Friday,Sep,6,1940,19,9,7,2010,BURGLARY,FELONY,D,66,BROOKLYN,N.Y. POLICE DEPT,987478,166141,point(40.6227027620001 -73.9883732929999),40.6227027620001,-73.9883732929999
 2,c6245d4d,12/14/1968 12:20:00 AM,Saturday,Dec,14,1968,0,12,14,2008,GRAND LARCENY,FELONY,G,28,MANHATTAN,N.Y. POLICE DEPT,996470,232106,point(40.8037530600001 -73.955861904),40.8037530600001,-73.955861904
