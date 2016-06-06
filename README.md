@@ -96,6 +96,8 @@ This project has the same exact file called ```postgis_init.sql``` inside of my 
 
 6. Also, dump the file `sql_files/project_setup_nyc.sql` into Postgres by doing `psql crime_data_gis < sql_files/project_setup_nyc.sql` (the same as what you did for creating the PostGIS extensions) once the crime data is loaded into the table. If interested, here is a somewhat incoherent excerpt from my [week2 progress diary entry](https://github.com/Munnu/Stroll-Safely/blob/master/diary/week2/may_16th_log.md) if things don't work out. If I missed something in my SQL, please let me know.
 
-7. To run the application, do `python application.py` or make it into an executable by changing the permissions. Whatever floats your boat. To see the application locally, go to [http://localhost:5000](http://localhost:5000)
+7. Don't forget to set up your [virtual environment](https://virtualenv.pypa.io/en/stable/) if you have not. Once that's done, do a `pip install -r requirements.txt`.
+
+8. To run the application, do `python application.py` or make it into an executable by changing the permissions. Whatever floats your boat. To see the application locally, go to [http://localhost:5000](http://localhost:5000)
 
 **Now you should be set up!**
