@@ -11,13 +11,6 @@ If the route falls on a high crime area, it checks other potential options again
 
 The map shows the original Google suggested route and then the adjusted safer route and dynamically renders heatmaps within the bounds of the route.
 
-### Screenshots: Before and After
----
-![image](progress_screenshots/waypoints_with_heatmap_before.png =500x)
-
-
-![image](progress_screenshots/waypoints_with_heatmap_after.png =500x)
-
 ### Why Was This Made
 ---
 
