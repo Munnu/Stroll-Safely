@@ -79,9 +79,6 @@ def crimes():
     end_lat = request.args.get('end_lat')
     end_lng = request.args.get('end_lng')
 
-    print "\n\n\n\nThis is request.args stuff", start_lat, start_lng, end_lat, end_lng
-    print "types of them", type(start_lat), type(float(start_lng)), type(end_lat), type(end_lng)
-
     start_end_dict = {'point_a': {
                             'lat': float(start_lat),
                             'lng': float(start_lng)},
