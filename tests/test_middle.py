@@ -173,6 +173,4 @@ class TestMiddle(unittest.TestCase):
 
         eq_(len(latwise_inspect), 2)
         eq_(len(lngwise_inspect), 2)
-        eq(len(all_inspect), 4)
-
-
+        eq_(len(all_inspect), 4)
