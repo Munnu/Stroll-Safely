@@ -1,6 +1,6 @@
 import os
 from unittest import TestCase
-# from model import Employee, Department, connect_to_db, db, example_data
+from nose.tools import eq_, assert_not_equal
 from model import Crime_Data_NYC, NYC_Crimes_by_Geohash
 from model import connect_to_db, db, create_engine
 from application import app
@@ -21,7 +21,8 @@ class FlaskTests(TestCase):
         app.config['TESTING'] = True
 
         # Connect to test database
-        connect_to_db(app, "postgresql:///test_data")
+        # connect_to_db(app, "postgresql:///test_data")  # not using this now
+        connect_to_db(app, "postgres:///crime_data_gis")
 
     def test_homepage(self):
         """ hit up that root endpoint """
@@ -30,10 +31,16 @@ class FlaskTests(TestCase):
         self.assertIn("Route Me", result.data)
 
     def test_crimes_json(self):
-        """ hit up that crimes json from the get_twenty
-            to see if it renders properly """
+        """ hit up that crimes json to see if it renders properly """
 
-        result = self.client.get("/crimes.json")
+        start_lat = "40.7484405"
+        start_lng = "-73.98566439999999"
+        end_lat = "40.7505423"
+        end_lng = "-73.9877176"
+
+        result = self.client.get("/crimes.json?start_lat=" + start_lat +
+                                 "&start_lng=" + start_lng + "&end_lat=" + end_lat +
+                                 "&end_lng=" + end_lng)
         self.assertIn("latitude", result.data)
 
     def test_start_end_json(self):
@@ -88,11 +95,11 @@ class DatabaseTests(TestCase):
 
         self.assertTrue(True)
 
-    def test_get_a_crime(self):
-        """Can we retreive a crime in the sample data?"""
+    # def test_get_a_crime(self):
+    #     """Can we retreive a crime in the sample data?"""
 
-        crime = Crime_Data_NYC.query.limit(1).first()
-        self.assertTrue(crime)
+    #     crime = Crime_Data_NYC.query.limit(1).first()
+    #     self.assertTrue(crime)
 
 
 # class MockFlaskTests(TestCase):
