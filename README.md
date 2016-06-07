@@ -17,7 +17,7 @@ Flask, Python, PostgreSQL, PostGIS, HTML/CSS, JQuery, JavaScript, SQLAlchemy, Sh
 
 ### Screenshots: Before and After
 ---
-![image](progress_screenshots/waypoints_with_heatmap_before.png =500x)
+<img src="progress_screenshots/waypoints_with_heatmap_before.png" width="500px">
 
 ![image](progress_screenshots/waypoints_with_heatmap_after.png =500x)
 
