@@ -1,5 +1,4 @@
 from flask_sqlalchemy import SQLAlchemy
-from sqlalchemy import create_engine
 from geoalchemy2.types import Geometry
 
 # instantiates a SQLAlchemy type

@@ -4,12 +4,8 @@
 # It dynamically generates the bounds based on the user's start and end location
 # Gets the crime records
 # ------------------------------------------------------------------------------
-import json, requests
 from math import cos, sin, radians
-from model import Crime_Data_NYC, NYC_Crimes_by_Geohash
-from model import connect_to_db, db, init_app
-from flask_sqlalchemy import SQLAlchemy
-from sqlalchemy import and_, or_
+from model import db, init_app
 from gmaps import Directions, Geocoding
 from shapely.geometry import LineString
 
@@ -166,7 +162,7 @@ def generate_waypoint(lowest_crime_index, points_dict_data, segmented_points):
                 'location': {'lat': point_data['point'][0],
                              'lng': point_data['point'][1]},
                 'stopover': False  # b/c not stop on the route, a recalc
-                })
+            })
     # returns nothing, just appends stuff into segmented_points
 
 
@@ -253,12 +249,12 @@ def interpolate_points(route_line, line_points):
     segmented_points[0]['data']['start'] = {
         'lat': line_points[0][0],
         'lng': line_points[0][1]
-        }
+    }
 
     segmented_points[0]['data']['end'] = {
         'lat': line_points[-1][0],
         'lng': line_points[-1][1]
-        }
+    }
 
     return segmented_points
 
@@ -286,20 +282,6 @@ def find_crime_areas(segmented_points):
 
             # this is probably temporary, for display purposes
             segmented_points[j]['is_high_crime'] = True
-
-            # some raw sql to get the center coords of geohash
-            geohash_center_sql = "SELECT " + \
-                "ST_AsText(ST_PointFromGeoHash(geohash)) " + \
-                "FROM nyc_crimes_by_geohash " + \
-                "WHERE geohash='%s'" % (segmented_points[j]['geohash'])
-
-            # execute the raw sql, and there should only be one result... so get that.
-            geohash_center_query = db.engine.execute(geohash_center_sql).fetchone()
-
-            # some string splitting to extract data
-            location = geohash_center_query[0].strip("POINT(").rstrip(")").split()
-            latitude = location[0]
-            longitude = location[1]
 
             # do a conditional that if the bad neighborhood is at
             # len(segmented_points) we need to go get the end dict
@@ -428,7 +410,7 @@ def get_position_geohash(points):
             'total_crimes': geohash_query[2],
             'crime_index': float(geohash_query[3]),
             'point': point
-            }
+        }
         coords_data.append(geohash_query_data)
 
     # return something like [{dicte}, {dictw}], or {dict}, based on total pts
@@ -484,4 +466,3 @@ def total_crimes_in_bounds(user_coords):
         crimes_coords['crimes'].append(format_loc_dict)
 
     return crimes_coords
-

@@ -1,7 +1,5 @@
-from flask import Flask, render_template, url_for, jsonify, request
-from flask_restful import marshal_with, fields
-from model import Crime_Data_NYC, NYC_Crimes_by_Geohash, connect_to_db
-#from model import init_app
+from flask import Flask, render_template, jsonify, request
+from model import connect_to_db
 
 from middle import address_to_lat_lng, execute_waypoint_sequence
 from middle import total_crimes_in_bounds
@@ -80,11 +78,11 @@ def crimes():
     end_lng = request.args.get('end_lng')
 
     start_end_dict = {'point_a': {
-                            'lat': float(start_lat),
-                            'lng': float(start_lng)},
-                     'point_b': {
-                            'lat': float(end_lat),
-                            'lng': float(end_lng)}}
+                      'lat': float(start_lat),
+                      'lng': float(start_lng)},
+                      'point_b': {
+                          'lat': float(end_lat),
+                          'lng': float(end_lng)}}
 
     crimes_coords = total_crimes_in_bounds(start_end_dict)
     return jsonify(crimes_coords)
