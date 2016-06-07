@@ -65,29 +65,8 @@ class DatabaseTests(TestCase):
         app.config['TESTING'] = True
 
         # Connect to test database
-        connect_to_db(app, "postgresql:///test_data")
-        #conn = db.create_engine('postgres:///test_data').raw_connection()
-
-        # # Create tables and add sample data
-        # db.create_all()  # for table creation, based off the class in model.py
-        # db.session.commit()
-
-        # Test_Crimes.query.delete()  # for data loading that's ran more than once
-
-        # # data loading section from csv
-        # csv_file_path = os.path.dirname(os.path.abspath(__file__)) + \
-        #     '/csv_files/unit_test_crime_data.csv'
-
-        # with open(csv_file_path, 'r') as f:
-        #     sql = "COPY test_crimes FROM '%s' WITH CSV HEADER DELIMITER AS ','" % csv_file_path
-        #     result = db.engine.execute(sql)
-        #     db.session.commit()
-
-    # def tearDown(self):
-    #     """Do at end of every test."""
-
-    #     db.session.close()
-    #     db.drop_all()
+        # connect_to_db(app, "postgresql:///test_data")  # not using this
+        connect_to_db(app, "postgresql:///crime_data_gis")
 
     def test_assert(self):
         """ dummy test to see if things work, allows loading of
@@ -95,11 +74,11 @@ class DatabaseTests(TestCase):
 
         self.assertTrue(True)
 
-    # def test_get_a_crime(self):
-    #     """Can we retreive a crime in the sample data?"""
+    def test_get_a_crime(self):
+        """Can we retreive a crime in the sample data?"""
 
-    #     crime = Crime_Data_NYC.query.limit(1).first()
-    #     self.assertTrue(crime)
+        crime = Crime_Data_NYC.query.limit(1).first()
+        self.assertTrue(crime)
 
 
 # class MockFlaskTests(TestCase):
