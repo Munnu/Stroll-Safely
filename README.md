@@ -11,6 +11,10 @@ If the route falls on a high crime area, it checks other potential options again
 
 The map shows the original Google suggested route and then the adjusted safer route and dynamically renders heatmaps within the bounds of the route.
 
+### Technologies Used
+---
+Flask, Python, PostgreSQL, PostGIS, HTML/CSS, JQuery, JavaScript, SQLAlchemy, Shapely and the Google Maps API.
+
 ### Why Was This Made
 ---
 
