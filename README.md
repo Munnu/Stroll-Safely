@@ -13,7 +13,13 @@ The map shows the original Google suggested route and then the adjusted safer ro
 
 ### Technologies Used
 ---
-Flask, Python, PostgreSQL, PostGIS, HTML/CSS, JQuery, JavaScript, SQLAlchemy, Shapely and the Google Maps API.
+Flask, Python, PostgreSQL, PostGIS, HTML/CSS, JQuery, JavaScript, SQLAlchemy, Shapely, and the Google Maps API.
+
+### Screenshots: Before and After
+---
+![image](progress_screenshots/waypoints_with_heatmap_before.png =500x)
+
+![image](progress_screenshots/waypoints_with_heatmap_after.png =500x)
 
 ### Why Was This Made
 ---
