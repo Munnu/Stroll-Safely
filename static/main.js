@@ -161,11 +161,17 @@ var sendDirectionsResult = function(returnedDirectionsData) {
     // assemble a url (this will be our flask route), so exciting...
     // the data parameter is needed and the json stringify or else it would be
     // nearly impossible to extract the data when attempting in flask
-    var url = '/directions-data.json?data=' + JSON.stringify(returnedDirectionsData[0]);
+    // var url = '/directions-data.json?data=' + JSON.stringify(returnedDirectionsData[0]);
+    var url = '/directions-data.json';
 
     // this next step is to pass the values into the flask json endpoint
     // not passing in the data parameter because that's coming in as an argument
-    $.get(url, success=showOptimalRoute); // success function is needed
+    $.ajax(url, 
+            {data: JSON.stringify(returnedDirectionsData[0]),
+             type: 'POST'}
+             ).done(showOptimalRoute); // workaround for HTTP 414 in production
+
+    // $.get(url, success=showOptimalRoute); // success function is needed
 };
 
 var startDirections =  function(event){

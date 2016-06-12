@@ -34,14 +34,19 @@ def parse_user_start_end():
     return jsonify(lat_lng_dict)
 
 
-@app.route('/directions-data.json', methods=['GET'])
+@app.route('/directions-data.json', methods=['POST'])
 def directionsData():
     """ This holds all of the leg information pertaining to the route
         and all of this other fancy stuff  and returns back the waypoint(s)
         if necessary. """
 
-    directions_data = request.args.get('data')
+    # this section is a workaround based on issues noted in deployment (HTTP 414 error)
+    # directions_data = request.args.get('data')
+    directions_data_key = request.form.keys()
+    directions_data_value = request.form.values()
+    directions_data = directions_data_key[0] + directions_data_value[0]
     directions_data = json.loads(directions_data)
+
     # print "+++++++++++++++++++++++++++++++++++++++++++++"
     # print "This is directions_data type", type(directions_data)
     # print "This is directions_data", json.dumps(directions_data, indent=2)
