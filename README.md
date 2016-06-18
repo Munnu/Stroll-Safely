@@ -24,7 +24,7 @@ Flask, Python, PostgreSQL, PostGIS, HTML/CSS, JQuery, JavaScript, SQLAlchemy, Sh
 ### Why Was This Made
 ---
 
-A few months ago I met [Phoenix Perry](http://phoenixperry.com/). She told me about this interesting incident that had happened to her while travelling in France. She had inputted a route into Google Maps and it had routed her into a dangerous neighborhood. When she was at the red light (she was driving), someone had bashed into her glass and took out her purse in real time. When the police officer arrived, they had also admitted to having a similar incident happen to them not too far from where Phoenix' incident had happened.
+A few months ago I met [Phoenix Perry](http://phoenixperry.com/). She told me about this interesting incident that had happened to her while travelling in London. She had inputted a route into Google Maps and it had routed her into a dangerous neighborhood. When she was at the red light (she was driving), someone had bashed into her glass and took out her purse in real time. When the police officer arrived, they had also admitted to having a similar incident happen to them not too far from where Phoenix' incident had happened.
 
 I'm also living on the cusp of what is considered a dangerous neighborhood relative to the rest of San Francisco. I'm a very tiny individual and also very individualistic. I am also new to the area. I strongly dislike not being able to get to where I need to go be an impediment, especially when I'm officially in the heart of the city and may be walking around past sunset. What I became aware of is that there are some blocks that are more okay to travel through than others.
 
